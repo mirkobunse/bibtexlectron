@@ -22,8 +22,11 @@ export default class MenuBar extends Component {
             <Dropdown.Item text='Save as...' description='ctrl + shift + s' />
           </Dropdown.Menu>
         </Dropdown>
+        <Menu.Item position='right' className='file-name'>
+          ~/foo/bar.tex
+        </Menu.Item>
         <Menu.Item header position='right'>
-          Ö
+          bibtexlectron
         </Menu.Item>
       </Menu>
     )
