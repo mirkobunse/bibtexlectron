@@ -8,21 +8,21 @@ import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 
 const AppLayout = () => (
-  <Grid padded>
-    <Grid.Row style={{ padding: '0px' }}>
-      <Grid.Column style={{ padding: '0px' }}>
+  <Grid padded className='layout-grid'>
+    <Grid.Row>
+      <Grid.Column>
         <MenuBar />
       </Grid.Column>
     </Grid.Row>
 
-    <Grid.Row style={{ paddingTop: '0px', paddingBottom: '0px', background: '#1b1c1d' }}>
+    <Grid.Row>
     <Grid.Column>
       <ToolBar />
     </Grid.Column>
     </Grid.Row>
 
-    <Grid.Row style={{ padding: '0px', height: 'calc(100vh - 100px)' }}>
-    <Grid.Column style={{ padding: '0px', width: '100vw', overflowY: 'scroll' }}>
+    <Grid.Row className='main-row'>
+    <Grid.Column className='main-col'>
       <TableView />
     </Grid.Column>
     </Grid.Row>

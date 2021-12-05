@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { Button, Container, Dropdown, Icon, Input } from 'semantic-ui-react';
 
-const languageOptions = [
+const filterOptions = [
   { key: 'Arabic', text: 'Arabic', value: 'Arabic' },
   { key: 'Chinese', text: 'Chinese', value: 'Chinese' },
   { key: 'Danish', text: 'Danish', value: 'Danish' },
@@ -13,8 +13,8 @@ const languageOptions = [
 export default class ToolBar extends Component {
   render() {
     return (
-      <Container fluid style={{ height: '60px' }}>
-        <Button icon labelPosition='left' style={{ marginTop: '6px', marginBottom: '6px' }}>
+      <Container fluid className='tool-bar'>
+        <Button icon labelPosition='left' className='add'>
           <Icon name='plus' />
           Add...
         </Button>
@@ -24,16 +24,14 @@ export default class ToolBar extends Component {
           className='icon'
           labeled
           icon='filter'
-          options={languageOptions}
+          options={filterOptions}
           search
           text='Filter by Tag...'
-          style={{ marginTop: '6px', marginBottom: '6px', marginLeft: '8px' }}
         />
         <Input
           icon='search'
           iconPosition='left'
           placeholder='Search...'
-          style={{ marginTop: '4px', marginBottom: '5px', marginLeft: '8px', width: 'calc(100% - 300px)' }}
         />
       </Container>
     )

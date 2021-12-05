@@ -7,12 +7,6 @@ body {
   color: black;
   height: 100vh;
   background: white;
-  /* background: linear-gradient(
-    200.96deg,
-    #fedc2a -29.09%,
-    #dd5789 51.77%,
-    #7a2c9e 129.35%
-  ); */
   font-family: sans-serif;
   overflow-y: hidden;
   display: flex;
@@ -20,9 +14,7 @@ body {
   align-items: center;
 }
 
-.container::-webkit-scrollbar {
-  width: 12px;
-}
+/* remove rounded corners from all Semantic UI components */
 .container::-webkit-scrollbar-track,
 .container::-webkit-scrollbar-thumb,
 .ui.button,
@@ -34,43 +26,62 @@ body {
 .ui[class*="left action"].input > .dropdown:first-child {
   border-radius: 0px;
 }
+
+/* remove separators in the MenuBar */
 .ui.menu .item::before {
   display: none;
 }
 
-button {
-  background-color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  appearance: none;
-  font-size: 1.3rem;
-  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
-    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
-  transition: all ease-in 0.1s;
-  cursor: pointer;
-  opacity: 0.9;
+/* layout grid without padding */
+.layout-grid .row {
+  padding: 0px !important;
+}
+.layout-grid .column {
+  padding: 0px !important;
 }
 
-li {
-  list-style: none;
+/* the menu bar */
+.menu-bar {
+  height: 40px;
+}
+.menu-bar .menu {
+  min-width: 14em !important;
 }
 
-a {
-  text-decoration: none;
-  height: fit-content;
-  width: fit-content;
-  margin: 10px;
+/* the tool bar */
+.tool-bar {
+  height: 60px;
+  background: #1b1c1d;
+  padding: 0px 16px;
+}
+.tool-bar > * {
+  margin-top: 6px !important;
+  margin-bottom: 6px !important;
+  margin-left: 16px !important;
+  margin-right: 0px !important;
+}
+.tool-bar > *:first-child {
+  margin-left: 0px !important;
+}
+.tool-bar > *:last-child {
+  width: calc(100% - 309px) !important;
+}
+.tool-bar input {
+  padding-top: 8.5px !important;
+  padding-bottom: 8.5px !important;
+}
+.tool-bar i.icon {
+  height: 36px !important;
 }
 
-a:hover {
-  opacity: 1;
-  text-decoration: none;
+/* main view with a wider scroll bar */
+.layout-grid .main-row {
+  height: calc(100vh - 100px);
 }
-
-.Hello {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
+.layout-grid .main-col {
+  overflow-y: scroll;
+  width: 100vw !important;
+}
+.layout-grid .main-col::-webkit-scrollbar {
+  width: 20px;
 }
