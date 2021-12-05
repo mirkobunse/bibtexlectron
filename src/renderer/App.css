@@ -4,19 +4,37 @@
  */
 body {
   position: relative;
-  color: white;
+  color: black;
   height: 100vh;
-  background: linear-gradient(
+  background: white;
+  /* background: linear-gradient(
     200.96deg,
     #fedc2a -29.09%,
     #dd5789 51.77%,
     #7a2c9e 129.35%
-  );
+  ); */
   font-family: sans-serif;
   overflow-y: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.container::-webkit-scrollbar {
+  width: 12px;
+}
+.container::-webkit-scrollbar-track,
+.container::-webkit-scrollbar-thumb,
+.ui.button,
+.ui.table,
+.ui.input > input,
+.ui[class*="left action"].input > .button:first-child,
+.ui[class*="left action"].input > .buttons:first-child > .button,
+.ui[class*="left action"].input > .dropdown:first-child {
+  border-radius: 0px;
+}
+.ui.menu .item::before {
+  display: none;
 }
 
 button {
@@ -31,11 +49,6 @@ button {
   transition: all ease-in 0.1s;
   cursor: pointer;
   opacity: 0.9;
-}
-
-button:hover {
-  transform: scale(1.05);
-  opacity: 1;
 }
 
 li {
