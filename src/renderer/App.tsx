@@ -1,7 +1,5 @@
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
-import { Component } from 'react';
 import { Button, Confirm, Container, Dropdown, Grid, Icon, Input, Menu, Table } from 'semantic-ui-react';
-import icon from '../../assets/icon.svg';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 
@@ -101,58 +99,6 @@ const MenuExampleAttached = () => (
     </Grid.Row>
   </Grid>
 )
-
-function MyForm() {
-  function HandleSubmit(e) {
-    e.preventDefault()
-    alert("Form submitted")
-  }
-  return (
-    <div>
-      <form onSubmit={e => HandleSubmit(e)}>
-        <input type="text"/>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  );
-}
-
-function Hello() {
-  return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
-    </div>
-  );
-};
 
 export default function App() {
   return (
