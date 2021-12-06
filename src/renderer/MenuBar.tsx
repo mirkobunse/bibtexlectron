@@ -13,6 +13,10 @@ export default class MenuBar extends Component {
     this.openRef.current.click();
   }
 
+  handleNew = (event) => {
+    this.props.onNew();
+  }
+
   handleOpen = (event) => {
     this.props.onOpen(event.target.files[0].path);
   }
@@ -22,7 +26,11 @@ export default class MenuBar extends Component {
       <Menu inverted fluid className='menu-bar'>
         <Dropdown item icon={null} text='File'>
           <Dropdown.Menu>
-            <Dropdown.Item text='New' description='ctrl + n' />
+            <Dropdown.Item
+              text='New'
+              description='ctrl + n'
+              onClick={this.handleNew}
+            />
             <Dropdown.Item onClick={this.showFileDialog}>
               <input
                 ref={this.openRef}

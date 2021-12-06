@@ -14,6 +14,10 @@ class AppComponent extends Component {
     this.state = { path: '', content: '' };
   }
 
+  handleNew = () => {
+    this.setState({ path: '', content: '' });
+  }
+
   handleOpen = (path) => {
     fs.readFile(
       path,
@@ -37,7 +41,11 @@ class AppComponent extends Component {
       <Grid padded className='layout-grid'>
         <Grid.Row>
           <Grid.Column>
-            <MenuBar path={this.state.path} onOpen={this.handleOpen}/>
+            <MenuBar
+              path={this.state.path}
+              onOpen={this.handleOpen}
+              onNew={this.handleNew}
+            />
           </Grid.Column>
         </Grid.Row>
 
