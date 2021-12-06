@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
+import Cite from 'citation-js';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
 import TextView from './view/TextView.tsx';
@@ -8,27 +9,40 @@ import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
 
+const cite = new Cite();
+const parseAsync = Cite.parse.input.async.chain; // shorthand
+
 class AppComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { path: '', content: '' };
+    this.state = { path: null, textContent: null, jsonContent: null };
   }
 
   handleNew = () => {
-    this.setState({ path: '', content: '' });
+    this.setState({ path: null, textContent: null, jsonContent: null });
   }
 
   handleOpen = (path) => {
     fs.readFile(
       path,
       'utf-8',
-      (err, data) => {
+      (err, data) => { // parse the BibTeX file
         if (err) throw err;
-
-        // trigger an update of this component
-        this.setState({ path, content: data.toString() });
+        const textContent = data.toString();
+        parseAsync(textContent)
+          .then(this.handleParsed(path, textContent));
       }
     );
+  }
+
+  handleParsed = (path, textContent) => {
+    return (data) => {
+      this.setState({ // trigger an update of this component
+        path,
+        textContent,
+        jsonContent: cite.set(data).get({ format: 'string' })
+      });
+    }
   }
 
   componentDidMount() {
@@ -57,7 +71,7 @@ class AppComponent extends Component {
 
         <Grid.Row className='main-row'>
         <Grid.Column className='main-col'>
-          <TextView content={this.state.content}/>
+          <TextView content={this.state.jsonContent}/>
         </Grid.Column>
         </Grid.Row>
       </Grid>
