@@ -40,7 +40,7 @@ class AppComponent extends Component {
       this.setState({ // trigger an update of this component
         path,
         textContent,
-        jsonContent: cite.set(data).get({ format: 'string' })
+        jsonContent: cite.set(data).get()
       });
     }
   }
@@ -71,7 +71,7 @@ class AppComponent extends Component {
 
         <Grid.Row className='main-row'>
         <Grid.Column className='main-col'>
-          <TextView content={this.state.jsonContent}/>
+          <TextView content={this.state.textContent}/>
         </Grid.Column>
         </Grid.Row>
       </Grid>
