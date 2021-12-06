@@ -3,7 +3,7 @@ import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
-import TableView from './TableView.tsx';
+import TextView from './TextView.tsx';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 
@@ -23,7 +23,7 @@ const AppLayout = () => (
 
     <Grid.Row className='main-row'>
     <Grid.Column className='main-col'>
-      <TableView />
+      <TextView />
     </Grid.Column>
     </Grid.Row>
   </Grid>
