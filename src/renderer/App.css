@@ -88,3 +88,10 @@ body {
 .layout-grid .main-col::-webkit-scrollbar {
   width: 20px;
 }
+
+.empty-view {
+  font-size: 300%;
+  color: gray;
+  text-align: center;
+  margin-top: calc(50vh - 100px);
+}

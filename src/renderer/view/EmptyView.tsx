@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import { Container } from 'semantic-ui-react';
 
-export default class TextView extends Component {
+export default class EmptyView extends Component {
   render() {
     return (
-      <Container>
-        {this.props.content}
+      <Container className="empty-view">
+        Press "ctrl + o" to open a file
       </Container>
     )
   }

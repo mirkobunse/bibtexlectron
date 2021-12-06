@@ -3,7 +3,7 @@ import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
-import TextView from './TextView.tsx';
+import TextView from './view/TextView.tsx';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
