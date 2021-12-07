@@ -5,7 +5,6 @@ import EmptyView from './EmptyView.tsx';
 class TableRow extends Component {
   render() {
     const c = this.props.content; // shorthand
-    console.log(c);
     return (
       <Table.Row>
         <Table.Cell>{c['id']}</Table.Cell>
@@ -19,7 +18,6 @@ class TableRow extends Component {
 
 export default class TableView extends Component {
   renderRows = () => {
-    console.log(this.props);
     return this.props.content.map((entry) => <TableRow content={entry} key={entry['id']}/>);
   }
 

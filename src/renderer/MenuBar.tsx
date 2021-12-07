@@ -14,6 +14,7 @@ export default class MenuBar extends Component {
   }
 
   handleNew = (event) => {
+    this.openRef.current.value = "";
     this.props.onNew();
   }
 
