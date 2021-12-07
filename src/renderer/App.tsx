@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
 import Cite from 'citation-js';
+import { tokenize } from './io/parseBibtex';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
 import TableView from './view/TableView.tsx';
@@ -16,6 +17,12 @@ class AppComponent extends Component {
   constructor(props) {
     super(props);
     this.state = { path: null, textContent: null, jsonContent: null };
+
+    // testing
+    console.log(tokenize(`
+      new hello = 'world'
+      print hello
+    `));
   }
 
   handleNew = () => {
