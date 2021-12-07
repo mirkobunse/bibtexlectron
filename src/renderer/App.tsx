@@ -20,8 +20,8 @@ class AppComponent extends Component {
 
     // testing
     console.log(tokenize(`
-      new hello = 'world'
-      print hello
+      @Article{actis2011design,
+        author    = {Actis, M and Agnetta, G and Aharonian, Felix and Akhperjanian, A and Aleksi{\'c}, J and Aliu, E and Allan, D and Allekotte, I and Antico, F and Antonelli, LA and others},
     `));
   }
 

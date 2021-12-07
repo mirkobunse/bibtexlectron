@@ -1,10 +1,14 @@
+/*
+ * this custom BibTeX parser is based on a tutorial at https://balit.boxxen.org/
+ */
+
 enum TokenType {
-  VariableDeclaration = 'VariableDeclaration',
-  AssignmentOperator = 'AssignmentOperator',
-  Literal = 'Literal',
-  String = 'String',
-  LineBreak = 'LineBreak',
-  Log = 'Log'
+  EntryType = 'EntryType',
+  OpeningBracket = 'OpeningBracket',
+  ClosingBracket = 'ClosingBracket',
+  Equals = 'Equals',
+  Comma = 'Comma',
+  Literal = 'Literal'
 }
 
 interface TokenNode<T extends TokenType> {
@@ -16,19 +20,21 @@ interface TokenValueNode<T extends TokenType> extends TokenNode<T> {
 }
 
 type Token =
-  TokenNode<TokenType.AssignmentOperator> |
-  TokenNode<TokenType.VariableDeclaration> |
-  TokenNode<TokenType.LineBreak> |
-  TokenValueNode<TokenType.Literal> |
-  TokenValueNode<TokenType.String>
+  TokenValueNode<TokenType.EntryType> |
+  TokenNode<TokenType.OpeningBracket> |
+  TokenNode<TokenType.ClosingBracket> |
+  TokenNode<TokenType.Equals> |
+  TokenNode<TokenType.Comma> |
+  TokenValueNode<TokenType.Literal>
 
 const tokenStringMap: Array<{
   key: string,
   value: Token
 }> = [
-  { key: '\n', value: { type: TokenType.LineBreak } },
-  { key: 'new', value: { type: TokenType.VariableDeclaration } },
-  { key: '=', value: { type: TokenType.AssignmentOperator } },
+  { key: '{', value: { type: TokenType.OpeningBracket } },
+  { key: '}', value: { type: TokenType.ClosingBracket } },
+  { key: '=', value: { type: TokenType.Equals } },
+  { key: ',', value: { type: TokenType.Comma } },
 ]
 
 export function tokenize(input: string): Token[] {
@@ -68,12 +74,13 @@ export function tokenize(input: string): Token[] {
 
     return bucket
   }
-  
+
+  // main tokenization loop
   while (currentPosition < input.length) {
     const currentToken = input[currentPosition];
 
-    // our language doesn't care about whitespace.
-    if (currentToken === ' ') {
+    // our language doesn't care about whitespace
+    if (currentToken === ' ' || currentToken === '\n') {
       currentPosition++;
       continue;
     }
@@ -89,34 +96,31 @@ export function tokenize(input: string): Token[] {
       }
     }
     if (isKeyword) {
-      currentPosition++;
       continue;
     }
 
-    // match strings
-    if (currentToken === "'") {
+    // match EntryType
+    if (currentToken === '@') {
       currentPosition++; // skip over the opening '
-      const bucket = lookahead(/[^']/);
+      const bucket = lookahead(/[^{}=\s,]/);
       out.push({
-        type: TokenType.String,
+        type: TokenType.EntryType,
         value: bucket.join('')
       });
+      out.push({
+        type: TokenType.OpeningBracket
+      }); // add the OpeningBracket immediately
       currentPosition += bucket.length + 1;
       continue
     }
 
     // match literals
-    const literalRegex = /[a-zA-Z]/;
-    const literalRegexNext = /[a-zA-Z0-9]/;
-    if (literalRegex.test(currentToken)) {
-      const bucket = lookahead(literalRegex, literalRegexNext);
-      out.push({
-        type: TokenType.Literal,
-        value: bucket.join('')
-      });
-      currentPosition += bucket.length;
-    }
-    currentPosition++;
+    const bucket = lookahead(/[^{}=\s,]/);
+    out.push({
+      type: TokenType.Literal,
+      value: bucket.join('')
+    });
+    currentPosition += bucket.length;
   }
 
   return out;
