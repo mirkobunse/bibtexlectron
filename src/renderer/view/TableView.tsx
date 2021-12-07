@@ -8,7 +8,7 @@ class TableRow extends Component {
     console.log(c);
     return (
       <Table.Row>
-        <Table.Cell>{c['id'] || ''}</Table.Cell>
+        <Table.Cell>{c['id']}</Table.Cell>
         <Table.Cell>{c['title'] || ''}</Table.Cell>
         <Table.Cell>{c['container-title'] || ''}</Table.Cell>
         <Table.Cell>{c['issued']['date-parts'][0] || ''}</Table.Cell>
@@ -20,7 +20,7 @@ class TableRow extends Component {
 export default class TableView extends Component {
   renderRows = () => {
     console.log(this.props);
-    return this.props.content.map((entry) => <TableRow content={entry}/>);
+    return this.props.content.map((entry) => <TableRow content={entry} key={entry['id']}/>);
   }
 
   render() {
