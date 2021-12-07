@@ -95,3 +95,10 @@ body {
   text-align: center;
   margin-top: calc(50vh - 100px);
 }
+
+.table-view td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 25em;
+}

@@ -4,7 +4,7 @@ import { Grid } from 'semantic-ui-react';
 import Cite from 'citation-js';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
-import TextView from './view/TextView.tsx';
+import TableView from './view/TableView.tsx';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
@@ -71,7 +71,7 @@ class AppComponent extends Component {
 
         <Grid.Row className='main-row'>
         <Grid.Column className='main-col'>
-          <TextView content={this.state.textContent}/>
+          <TableView content={this.state.jsonContent}/>
         </Grid.Column>
         </Grid.Row>
       </Grid>

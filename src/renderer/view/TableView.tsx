@@ -1,40 +1,46 @@
 import { Component } from 'react';
 import { Table } from 'semantic-ui-react';
+import EmptyView from './EmptyView.tsx';
+
+class TableRow extends Component {
+  render() {
+    const c = this.props.content; // shorthand
+    console.log(c);
+    return (
+      <Table.Row>
+        <Table.Cell>{c['id'] || ''}</Table.Cell>
+        <Table.Cell>{c['title'] || ''}</Table.Cell>
+        <Table.Cell>{c['container-title'] || ''}</Table.Cell>
+        <Table.Cell>{c['issued']['date-parts'][0] || ''}</Table.Cell>
+      </Table.Row>
+    )
+  }
+}
 
 export default class TableView extends Component {
-  render() {
-    return (
-      <Table striped compact selectable>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Name</Table.HeaderCell>
-            <Table.HeaderCell>Date Joined</Table.HeaderCell>
-            <Table.HeaderCell>E-mail</Table.HeaderCell>
-            <Table.HeaderCell>Called</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+  renderRows = () => {
+    console.log(this.props);
+    return this.props.content.map((entry) => <TableRow content={entry}/>);
+  }
 
-        <Table.Body>
-          <Table.Row>
-            <Table.Cell>John Lilki</Table.Cell>
-            <Table.Cell>September 14, 2013</Table.Cell>
-            <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-            <Table.Cell>No</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Jamie Harington</Table.Cell>
-            <Table.Cell>January 11, 2014</Table.Cell>
-            <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
-            <Table.Cell>Yes</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Jill Lewis</Table.Cell>
-            <Table.Cell>May 11, 2014</Table.Cell>
-            <Table.Cell>jilsewris22@yahoo.com</Table.Cell>
-            <Table.Cell>Yes</Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
-    )
+  render() {
+    if (this.props.content)
+      return (
+        <Table striped compact selectable className="table-view">
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>ID</Table.HeaderCell>
+              <Table.HeaderCell>Title</Table.HeaderCell>
+              <Table.HeaderCell>Booktitle</Table.HeaderCell>
+              <Table.HeaderCell>Year</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+
+          <Table.Body>
+            {this.renderRows()}
+          </Table.Body>
+        </Table>
+      );
+    else return <EmptyView />;
   }
 }
