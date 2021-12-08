@@ -15,8 +15,8 @@ body {
 }
 
 /* remove rounded corners from all Semantic UI components */
-.container::-webkit-scrollbar-track,
-.container::-webkit-scrollbar-thumb,
+.layout-grid .main-col::-webkit-scrollbar-track,
+.layout-grid .main-col::-webkit-scrollbar-thumb,
 .ui.button,
 .ui.menu,
 .ui.table,
@@ -79,11 +79,11 @@ body {
 
 /* main view with a wider scroll bar */
 .layout-grid .main-row {
-  height: calc(100vh - 100px);
 }
 .layout-grid .main-col {
   overflow-y: scroll;
   width: 100vw !important;
+  height: calc(100vh - 100px);
 }
 .layout-grid .main-col::-webkit-scrollbar {
   width: 20px;
