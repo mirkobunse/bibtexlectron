@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
 import Cite from 'citation-js';
-import { tokenize } from './io/parseBibtex';
+import parseBibtex from './io/parseBibtex';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
 import TableView from './view/TableView.tsx';
@@ -19,9 +19,10 @@ class AppComponent extends Component {
     this.state = { path: null, textContent: null, jsonContent: null };
 
     // testing
-    console.log(tokenize(`
+    console.log(parseBibtex(`
       @Article{actis2011design,
         author    = {Actis, M and Agnetta, G and Aharonian, Felix and Akhperjanian, A and Aleksi{\'c}, J and Aliu, E and Allan, D and Allekotte, I and Antico, F and Antonelli, LA and others},
+      }
     `));
   }
 
