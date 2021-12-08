@@ -96,9 +96,23 @@ body {
   margin-top: calc(50vh - 100px);
 }
 
+.table-view {
+  font-size: small;
+}
+
+.table-view th,
+.table-view td {
+  max-width: 20vw;
+  min-width: 0vw;
+}
+
+.table-view th {
+  padding: 10px 9.1px !important;
+}
+
 .table-view td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 20em;
+  padding: 5px 9.1px !important;
 }
