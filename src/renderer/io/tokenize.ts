@@ -7,13 +7,13 @@ export interface ValueToken { value: string }
 export type Token = EntryToken | FieldToken | ValueToken // union type
 
 export function isEntryToken(x: Token): x is EntryToken {
-  return 'entryType' in x && 'bibKey' in x
+  return x && 'entryType' in x && 'bibKey' in x
 }
 export function isFieldToken(x: Token): x is FieldToken {
-  return 'field' in x
+  return x && 'field' in x
 }
 export function isValueToken(x: Token): x is ValueToken {
-  return 'value' in x
+  return x && 'value' in x
 }
 
 export default function tokenize(input: string): Token[] {
@@ -95,7 +95,11 @@ export default function tokenize(input: string): Token[] {
           parts.push(bracket)
       }
       tokens.push({ value: parts.join('') });
+      continue
     }
+
+    // skip everything that does not match
+    currentPosition++
   }
 
   return tokens;
