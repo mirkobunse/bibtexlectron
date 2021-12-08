@@ -8,6 +8,7 @@ class TableRow extends Component {
     return (
       <Table.Row>
         <Table.Cell>{entry.bibKey}</Table.Cell>
+        <Table.Cell>{entry.author || entry.editor || ''}</Table.Cell>
         <Table.Cell>{entry.title || ''}</Table.Cell>
         <Table.Cell>{entry.journal || entry.booktitle || ''}</Table.Cell>
         <Table.Cell>{entry.year || ''}</Table.Cell>
@@ -28,8 +29,9 @@ export default class TableView extends Component {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>ID</Table.HeaderCell>
+              <Table.HeaderCell>Authors / Editor</Table.HeaderCell>
               <Table.HeaderCell>Title</Table.HeaderCell>
-              <Table.HeaderCell>Booktitle</Table.HeaderCell>
+              <Table.HeaderCell>Journal / Booktitle</Table.HeaderCell>
               <Table.HeaderCell>Year</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
