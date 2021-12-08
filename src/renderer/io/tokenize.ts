@@ -48,7 +48,7 @@ export default function tokenize(input: string): Token[] {
     }
 
     // count openBrackets; TODO support opening and closing quotation marks '"'
-    if (currentToken === '{') {
+    if (currentToken === '{' && openBrackets < 2) { // openBrackets>=2 must belong to a field value
       openBrackets++
       currentPosition++
       continue
@@ -71,7 +71,7 @@ export default function tokenize(input: string): Token[] {
     }
 
     // match field names
-    if (openBrackets === 1) {
+    if (openBrackets === 1 && currentToken !== '{') {
       const field = lookahead(/[^=\s]/);
       tokens.push({ field });
       currentPosition += field.length + 1; // skip the '=' or '\s' separator
