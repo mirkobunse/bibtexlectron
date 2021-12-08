@@ -1,46 +1,91 @@
-import { Component } from 'react';
+import _ from 'lodash'
+import React, { Component } from 'react';
 import { Table } from 'semantic-ui-react';
 import EmptyView from './EmptyView.tsx';
 
-class TableRow extends Component {
-  render() {
-    const entry = this.props.entry;
-    return (
-      <Table.Row>
+export default class TableView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { // sort by descending year
+      sortColumn: 'year',
+      sortAscending: false
+    }
+  }
+
+  renderEntries = () => {
+    return _.orderBy(
+      this.props.entries,
+      this.state.sortColumn,
+      this.state.sortAscending ? 'asc' : 'desc'
+    ).map((entry) => (
+      <Table.Row key={entry.bibKey}>
         <Table.Cell>{entry.bibKey}</Table.Cell>
         <Table.Cell>{entry.author || entry.editor || ''}</Table.Cell>
         <Table.Cell>{entry.title || ''}</Table.Cell>
         <Table.Cell>{entry.journal || entry.booktitle || ''}</Table.Cell>
         <Table.Cell>{entry.year || ''}</Table.Cell>
       </Table.Row>
-    )
+    ))
   }
-}
 
-export default class TableView extends Component {
-  renderEntries = () => {
-    return this.props.entries.map((entry) => <TableRow entry={entry} key={entry.bibKey}/>);
+  handleSort = (column) => {
+    return () => {
+      if (this.state.sortColumn === column) // change direction
+        this.setState({ sortAscending: !this.state.sortAscending })
+      else // change column
+        this.setState({ sortColumn: column, sortAscending: true })
+    }
+  }
+
+  isSorted = (column) => {
+    if (this.state.sortColumn === column) {
+      return this.state.sortAscending ? 'ascending' : 'descending'
+    } else return null
   }
 
   render() {
-    if (this.props.entries)
+    if (this.props.entries) {
       return (
-        <Table striped compact selectable className="table-view">
+        <Table sortable striped compact selectable className="table-view">
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>ID</Table.HeaderCell>
-              <Table.HeaderCell>Authors / Editor</Table.HeaderCell>
-              <Table.HeaderCell>Title</Table.HeaderCell>
-              <Table.HeaderCell>Journal / Booktitle</Table.HeaderCell>
-              <Table.HeaderCell>Year</Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={this.isSorted('bibKey')}
+                onClick={this.handleSort('bibKey')}
+              >
+                ID
+              </Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={this.isSorted('author')}
+                onClick={this.handleSort('author')}
+              >
+                Authors / Editors
+              </Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={this.isSorted('title')}
+                onClick={this.handleSort('title')}
+              >
+                Title
+              </Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={this.isSorted('journal')}
+                onClick={this.handleSort('journal')}
+              >
+                Journal / Booktitle
+              </Table.HeaderCell>
+              <Table.HeaderCell
+                sorted={this.isSorted('year')}
+                onClick={this.handleSort('year')}
+              >
+                Year
+              </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
-
           <Table.Body>
             {this.renderEntries()}
           </Table.Body>
         </Table>
       );
-    else return <EmptyView />;
+    } else return <EmptyView />;
   }
 }
