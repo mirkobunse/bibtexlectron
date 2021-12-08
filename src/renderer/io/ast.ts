@@ -49,7 +49,8 @@ export default function ast(tokens: Token[]): Entry[] {
           } else break
         } else break
       }
-      entries.push(entry)
+      if (Object.keys(entry).length > 2) // more fields than entryType and bibKey?
+        entries.push(entry)
       proceedUntil(isEntryToken)
 
     } else break
