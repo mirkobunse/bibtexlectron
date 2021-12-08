@@ -1,121 +1,102 @@
 /*
- * this custom BibTeX parser is based on a tutorial at https://balit.boxxen.org/
+ * This custom BibTeX parser was inspired by the tutorial at https://balit.boxxen.org/
  */
+export interface EntryToken { entryType: string, bibKey: string }
+export interface FieldToken { field: string }
+export interface ValueToken { value: string }
+export type Token = EntryToken | FieldToken | ValueToken // union type
 
-export enum TokenType {
-  EntryType = 'EntryType',
-  OpeningBracket = 'OpeningBracket',
-  ClosingBracket = 'ClosingBracket',
-  Literal = 'Literal'
+export function isEntryToken(x: Token): x is EntryToken {
+  return 'entryType' in x && 'bibKey' in x
 }
-
-interface TokenNode<T extends TokenType> {
-  type: T
+export function isFieldToken(x: Token): x is FieldToken {
+  return 'field' in x
 }
-
-interface TokenValueNode<T extends TokenType> extends TokenNode<T> {
-  value: string
+export function isValueToken(x: Token): x is ValueToken {
+  return 'value' in x
 }
-
-export type Token =
-  TokenValueNode<TokenType.EntryType> |
-  TokenNode<TokenType.OpeningBracket> |
-  TokenNode<TokenType.ClosingBracket> |
-  TokenValueNode<TokenType.Literal>
-
-const tokenStringMap: Array<{
-  key: string,
-  value: Token
-}> = [
-  { key: '{', value: { type: TokenType.OpeningBracket } },
-  { key: '}', value: { type: TokenType.ClosingBracket } },
-]
 
 export default function tokenize(input: string): Token[] {
-  const out: Token[] = [];
-  let currentPosition = 0;
-
-  // helper function for the tokenStringMap
-  function lookaheadString(str: string): boolean {
-    const parts = str.split('');
-    for (let i = 0; i < parts.length; i++) {
-      if (input[currentPosition + i] !== parts[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
+  const tokens: Token[] = []
+  let currentPosition = 0
+  let openBrackets = 0
 
   // helper functions for strings and literals
-  function lookahead(match: RegExp, matchNext?: RegExp): string[] {
+  function lookahead(match: RegExp): string {
     const bucket: string[] = []
-
     while (true) {
       const nextIndex = currentPosition + bucket.length
       const nextToken = input[nextIndex]
-      if (!nextToken) {
+      if (!nextToken)
         break
-      }
       let m: string | RegExp = match
-      if (matchNext && bucket.length) {
-        m = matchNext
-      }
-      if (m && !m.test(nextToken)) {
+      if (m && !m.test(nextToken))
         break
-      }
       bucket.push(nextToken)
     }
-
-    return bucket
+    return bucket.join('')
   }
 
   // main tokenization loop
   while (currentPosition < input.length) {
-    const currentToken = input[currentPosition];
+    const currentToken = input[currentPosition]
 
-    // our language doesn't care about whitespace
-    if (currentToken === ' ' || currentToken === '\n' || currentToken === ',' || currentToken === '=') {
-      currentPosition++;
-      continue;
-    }
-
-    // match tokens from the tokenStringMap
-    let isKeyword: boolean = false;
-    for (const { key, value } of tokenStringMap) {
-      if (lookaheadString(key)) {
-        out.push(value)
-        currentPosition += key.length;
-        isKeyword = true;
-        break
-      }
-    }
-    if (isKeyword) {
-      continue;
-    }
-
-    // match EntryType
-    if (currentToken === '@') {
-      currentPosition++; // skip over the opening '
-      const bucket = lookahead(/[^{}=\s,]/);
-      out.push({
-        type: TokenType.EntryType,
-        value: bucket.join('')
-      });
-      out.push({
-        type: TokenType.OpeningBracket
-      }); // add the OpeningBracket immediately
-      currentPosition += bucket.length + 1;
+    // ignore whitespace and separators outside of fields
+    if (openBrackets < 2 && [' ', '\n', ',', '='].includes(currentToken)) {
+      currentPosition++
       continue
     }
 
-    // match literals
-    const bucket = lookahead(/[^{}=\s,]/);
-    out.push({
-      type: TokenType.Literal,
-      value: bucket.join('')
-    });
-    currentPosition += bucket.length;
+    // count openBrackets; TODO support opening and closing quotation marks '"'
+    if (currentToken === '{') {
+      openBrackets++
+      currentPosition++
+      continue
+    } else if (currentToken === '}') {
+      openBrackets--
+      currentPosition++
+      continue
+    }
+
+    // match EntryType
+    if (openBrackets === 0 && currentToken === '@') {
+      currentPosition++; // skip over the opening '@'
+      const entryType = lookahead(/[^{]/); // TODO break on and skip whitespace
+      currentPosition += entryType.length + 1; // skip the '{' separator
+      openBrackets++
+      const bibKey = lookahead(/[^,]/); // TODO break on and skip whitespace
+      currentPosition += bibKey.length + 1; // skip the ',' separator
+      tokens.push({ entryType, bibKey });
+      continue
+    }
+
+    // match field names
+    if (openBrackets === 1) {
+      const field = lookahead(/[^=\s]/);
+      tokens.push({ field });
+      currentPosition += field.length + 1; // skip the '=' or '\s' separator
+      continue
+    }
+
+    // match field values
+    if (openBrackets > 1) {
+      const parts: string[] = []
+      while (openBrackets > 1) {
+        const part = lookahead(/[^{}]/);
+        currentPosition += part.length;
+        parts.push(part)
+        const bracket = input[currentPosition]
+        currentPosition++
+        if (bracket === '{')
+          openBrackets++
+        else if (bracket === '}')
+          openBrackets--
+        if (openBrackets > 1)
+          parts.push(bracket)
+      }
+      tokens.push({ value: parts.join('') });
+    }
   }
 
-  return out;
+  return tokens;
 }

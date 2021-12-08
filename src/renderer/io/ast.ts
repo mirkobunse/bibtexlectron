@@ -1,122 +1,59 @@
 /*
- * this custom BibTeX parser is based on a tutorial at https://balit.boxxen.org/
+ * This custom BibTeX parser was inspired by the tutorial at https://balit.boxxen.org/
  */
-import { Token, TokenType } from './tokenize';
+import { Token, isEntryToken, isFieldToken, isValueToken } from './tokenize';
 
-enum NodeType {
-  Document = 'Document',
-  Entry = 'Entry',
-  Field = 'Field'
-}
+export interface DocumentNode { entries: EntryNode[] }
+interface EntryNode { fields: FieldNode[] }
+interface FieldNode { key: string, value: string }
 
-interface FieldNode {
-  type: NodeType.Field,
-  key: string,
-  value: string
-}
-
-interface EntryNode {
-  type: NodeType.Entry,
-  fields: FieldNode[]
-}
-
-interface DocumentNode {
-  type: NodeType.Document,
-  entries: EntryNode[]
-}
-
-export type Node =
-  FieldNode |
-  EntryNode |
-  DocumentNode
-
-export default function ast(tokens: Token[]): Node {
+export default function ast(tokens: Token[]): DocumentNode {
   console.log(tokens);
   let currentIndex = 0;
-  let openBrackets = 0;
 
-  function processLiteral() : string | null {
-    const currentToken = tokens[currentIndex];
-    if (currentToken.type === TokenType.Literal) {
-      const currentValue = currentToken.value;
-      currentIndex++; // step forward
-      return currentValue;
-    }
-    else return null
-  }
-
-  function processField() : FieldNode | null {
-    const key = processLiteral(); // the first literal is the key
-    if (key) {
-      currentIndex++; // skip the OpeningBracket that must follow
-      openBrackets++; // now we need to start counting brackets
-      const literalParts: string[] = [];
-      while (currentIndex < tokens.length) {
-        const currentToken = tokens[currentIndex];
-        currentIndex++;
-        if (currentToken.type === TokenType.OpeningBracket) {
-          literalParts.push("{")
-          openBrackets++;
-        } else if (currentToken.type === TokenType.ClosingBracket) {
-          openBrackets--;
-          if (openBrackets == 0) { // is the last bracket closed?
-            return {
-              type: NodeType.Field,
-              key,
-              value: literalParts.join('')
-            }
-          } else literalParts.push("}");
-        } else if (currentToken.type === TokenType.Literal) {
-          literalParts.push(currentToken.value);
-        }
-      }
-    }
-    return null;
-  }
-
-  function processFields(entryType: string, bibKey: string) : FieldNode[] {
-    const fields: FieldNode[] = [
-      {
-        type: NodeType.Field,
-        key: 'entryType',
-        value: entryType
-      },
-      {
-        type: NodeType.Field,
-        key: 'bibKey',
-        value: bibKey
-      }
-    ];
+  // helper function to proceed to the next token of a specific type
+  function proceedUntil(condition: Function): void {
     while (currentIndex < tokens.length) {
-      const currentField = processField();
-      currentIndex++;
-      if (currentField)
-        fields.push(currentField);
+      const currentToken = tokens[currentIndex]
+      if (condition(currentToken))
+        break
+      currentIndex++
     }
-    return fields
   }
 
   // collect all entries
   const entries: EntryNode[] = [];
+  proceedUntil(isEntryToken) // skip all tokens until the first EntryType
   while (currentIndex < tokens.length) {
-    const currentToken = tokens[currentIndex];
-    currentIndex++;
-    if (currentToken.type === TokenType.EntryType) {
-      const entryType = currentToken.value;
-      currentIndex++; // skip the OpeningBracket that must follow
-      const bibKey = processLiteral(); // the first literal is the bibKey
-      console.log("Parsing EntryType ", entryType, bibKey);
-      if (entryType !== null && bibKey !== null) {
-        entries.push({
-          type: NodeType.Entry,
-          fields: processFields(entryType, bibKey)
-        });
-      }
-    }
-  }
+    const currentEntry = tokens[currentIndex]
+    if (isEntryToken(currentEntry)) {
+      currentIndex++
 
-  return {
-    type: NodeType.Document,
-    entries
+      // collect all fields
+      const fields: FieldNode[] = [
+        { key: "entryType", value: currentEntry.entryType },
+        { key: "bibKey", value: currentEntry.bibKey }
+      ]
+      proceedUntil((x: Token) => isFieldToken(x) || isEntryToken(x))
+      while (currentIndex < tokens.length) {
+        const currentField = tokens[currentIndex]
+        if (isFieldToken(currentField)) {
+          currentIndex++
+
+          // retrieve the value of the current field
+          proceedUntil((x: Token) => isValueToken(x) || isEntryToken(x))
+          const currentValue = tokens[currentIndex]
+          if (isValueToken(currentValue)) {
+            currentIndex++
+            fields.push({ key: currentField.field, value: currentValue.value })
+            proceedUntil((x: Token) => isFieldToken(x) || isEntryToken(x))
+          } else break
+        } else break
+      }
+      entries.push({ fields })
+      proceedUntil(isEntryToken);
+
+    } else break
   }
+  return { entries }
 }
