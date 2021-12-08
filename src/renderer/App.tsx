@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
-import Cite from 'citation-js';
 import parseBibtex from './io/parseBibtex';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
@@ -10,24 +9,14 @@ import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
 
-const cite = new Cite();
-const parseAsync = Cite.parse.input.async.chain; // shorthand
-
 class AppComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { path: null, textContent: null, jsonContent: null };
-
-    // testing
-    console.log(parseBibtex(`
-      @Article{actis2011design,
-        author    = {Actis, M and Agnetta, G and Aharonian, Felix and Akhperjanian, A and Aleksi{\'c}, J and Aliu, E and Allan, D and Allekotte, I and Antico, F and Antonelli, LA and others},
-      }
-    `));
+    this.state = { path: null, textContent: null, entries: null };
   }
 
   handleNew = () => {
-    this.setState({ path: null, textContent: null, jsonContent: null });
+    this.setState({ path: null, textContent: null, entries: null });
   }
 
   handleOpen = (path) => {
@@ -37,21 +26,27 @@ class AppComponent extends Component {
       (err, data) => { // parse the BibTeX file
         if (err) throw err;
         const textContent = data.toString();
-        parseAsync(textContent)
-          .then(this.handleParsed(path, textContent));
+        const entries = parseBibtex(textContent);
+        console.log(entries);
+
+        // trigger an update of this component
+        this.setState({ path, textContent, entries });
+
+        // parseAsync(textContent)
+        //   .then(this.handleParsed(path, textContent));
       }
     );
   }
 
-  handleParsed = (path, textContent) => {
-    return (data) => {
-      this.setState({ // trigger an update of this component
-        path,
-        textContent,
-        jsonContent: cite.set(data).get()
-      });
-    }
-  }
+  // handleParsed = (path, textContent) => {
+  //   return (data) => {
+  //     this.setState({ // trigger an update of this component
+  //       path,
+  //       textContent,
+  //       entries: cite.set(data).get()
+  //     });
+  //   }
+  // }
 
   componentDidMount() {
     if (this.path) // open the default file on startup
@@ -79,7 +74,7 @@ class AppComponent extends Component {
 
         <Grid.Row className='main-row'>
         <Grid.Column className='main-col'>
-          <TableView content={this.state.jsonContent}/>
+          <TableView entries={this.state.entries}/>
         </Grid.Column>
         </Grid.Row>
       </Grid>

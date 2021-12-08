@@ -4,25 +4,25 @@ import EmptyView from './EmptyView.tsx';
 
 class TableRow extends Component {
   render() {
-    const c = this.props.content; // shorthand
+    const entry = this.props.entry;
     return (
       <Table.Row>
-        <Table.Cell>{c['id']}</Table.Cell>
-        <Table.Cell>{c['title'] || ''}</Table.Cell>
-        <Table.Cell>{c['container-title'] || ''}</Table.Cell>
-        <Table.Cell>{c['issued']['date-parts'][0] || ''}</Table.Cell>
+        <Table.Cell>{entry.bibKey}</Table.Cell>
+        <Table.Cell>{entry.title || ''}</Table.Cell>
+        <Table.Cell>{entry.journal || entry.booktitle || ''}</Table.Cell>
+        <Table.Cell>{entry.year || ''}</Table.Cell>
       </Table.Row>
     )
   }
 }
 
 export default class TableView extends Component {
-  renderRows = () => {
-    return this.props.content.map((entry) => <TableRow content={entry} key={entry['id']}/>);
+  renderEntries = () => {
+    return this.props.entries.map((entry) => <TableRow entry={entry} key={entry.bibKey}/>);
   }
 
   render() {
-    if (this.props.content)
+    if (this.props.entries)
       return (
         <Table striped compact selectable className="table-view">
           <Table.Header>
@@ -35,7 +35,7 @@ export default class TableView extends Component {
           </Table.Header>
 
           <Table.Body>
-            {this.renderRows()}
+            {this.renderEntries()}
           </Table.Body>
         </Table>
       );
