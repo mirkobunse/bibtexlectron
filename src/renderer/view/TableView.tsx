@@ -18,7 +18,7 @@ export default class TableView extends Component {
       this.state.sortColumn,
       this.state.sortAscending ? 'asc' : 'desc'
     ).map((entry) => (
-      <Table.Row key={entry.bibKey}>
+      <Table.Row key={entry.bibKey} onClick={this.handleEntryClicked(entry.bibKey)}>
         <Table.Cell>{entry.bibKey}</Table.Cell>
         <Table.Cell>{entry.author || entry.editor || ''}</Table.Cell>
         <Table.Cell>{entry.title || ''}</Table.Cell>
@@ -41,6 +41,15 @@ export default class TableView extends Component {
     if (this.state.sortColumn === column) {
       return this.state.sortAscending ? 'ascending' : 'descending'
     } else return null
+  }
+
+  handleEntryClicked = (bibKey) => {
+    return () => {
+      const entry = _.find(this.props.entries, (entry) => {
+        return entry.bibKey === bibKey
+      })
+      this.props.onEntryClicked(entry)
+    }
   }
 
   render() {

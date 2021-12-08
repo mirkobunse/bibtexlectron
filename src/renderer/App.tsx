@@ -38,6 +38,10 @@ class AppComponent extends Component {
     );
   }
 
+  handleEntryClicked = (entry) => {
+    console.log(entry)
+  }
+
   // handleParsed = (path, textContent) => {
   //   return (data) => {
   //     this.setState({ // trigger an update of this component
@@ -74,7 +78,7 @@ class AppComponent extends Component {
 
         <Grid.Row className='main-row'>
         <Grid.Column className='main-col'>
-          <TableView entries={this.state.entries}/>
+          <TableView entries={this.state.entries} onEntryClicked={this.handleEntryClicked}/>
         </Grid.Column>
         </Grid.Row>
       </Grid>
