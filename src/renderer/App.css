@@ -105,11 +105,12 @@ body {
   max-width: 20vw;
   min-width: 0vw;
 }
-
 .table-view th {
   padding: 10px 9.1px !important;
 }
-
+.table-view th:last-child {
+  min-width: 64px;
+}
 .table-view td {
   white-space: nowrap;
   overflow: hidden;

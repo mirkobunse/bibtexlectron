@@ -8,7 +8,8 @@ export default class TableView extends Component {
     super(props);
     this.state = { // sort by descending year
       sortColumn: 'year',
-      sortAscending: false
+      sortAscending: false,
+      selectedKey: null
     }
   }
 
@@ -18,7 +19,11 @@ export default class TableView extends Component {
       this.state.sortColumn,
       this.state.sortAscending ? 'asc' : 'desc'
     ).map((entry) => (
-      <Table.Row key={entry.bibKey} onClick={this.handleEntryClicked(entry.bibKey)}>
+      <Table.Row
+        key={entry.bibKey}
+        onClick={this.handleEntryClicked(entry.bibKey)}
+        active={entry.bibKey === this.state.selectedKey}
+      >
         <Table.Cell>{entry.bibKey}</Table.Cell>
         <Table.Cell>{entry.author || entry.editor || ''}</Table.Cell>
         <Table.Cell>{entry.title || ''}</Table.Cell>
@@ -49,6 +54,7 @@ export default class TableView extends Component {
         return entry.bibKey === bibKey
       })
       this.props.onEntryClicked(entry)
+      this.setState({ selectedKey: bibKey })
     }
   }
 
@@ -56,7 +62,7 @@ export default class TableView extends Component {
     if (this.props.entries) {
       return (
         <Table sortable striped compact selectable className="table-view">
-          <Table.Header>
+          <Table.Header inverted>
             <Table.Row>
               <Table.HeaderCell
                 sorted={this.isSorted('bibKey')}

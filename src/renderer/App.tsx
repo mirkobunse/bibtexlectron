@@ -78,7 +78,10 @@ class AppComponent extends Component {
 
         <Grid.Row className='main-row'>
         <Grid.Column className='main-col'>
-          <TableView entries={this.state.entries} onEntryClicked={this.handleEntryClicked}/>
+          <TableView
+            entries={this.state.entries}
+            onEntryClicked={this.handleEntryClicked}
+          />
         </Grid.Column>
         </Grid.Row>
       </Grid>
