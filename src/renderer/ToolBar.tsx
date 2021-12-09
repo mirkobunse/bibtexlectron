@@ -11,6 +11,10 @@ const filterOptions = [
 ]
 
 export default class ToolBar extends Component {
+  handleSearch = (event, data) => {
+    this.props.onSearch(data.value)
+  }
+
   render() {
     return (
       <Container fluid className='tool-bar'>
@@ -32,6 +36,7 @@ export default class ToolBar extends Component {
           icon='search'
           iconPosition='left'
           placeholder='Search...'
+          onChange={this.handleSearch}
         />
       </Container>
     )

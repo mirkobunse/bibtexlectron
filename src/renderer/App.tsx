@@ -9,14 +9,21 @@ import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
 
+const DEFAULT_STATE = {
+  path: null,
+  textContent: null,
+  entries: null,
+  searchFilter: null
+}
+
 class AppComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { path: null, textContent: null, entries: null };
+    this.state = DEFAULT_STATE;
   }
 
   handleNew = () => {
-    this.setState({ path: null, textContent: null, entries: null });
+    this.setState(DEFAULT_STATE);
   }
 
   handleOpen = (path) => {
@@ -38,8 +45,12 @@ class AppComponent extends Component {
     );
   }
 
-  handleEntryClicked = (entry) => {
-    console.log(entry)
+  handleSearch = (filter) => {
+    this.setState({ searchFilter: filter })
+  }
+
+  handleEntryClicked = (bibKey) => {
+    console.log(bibKey)
   }
 
   // handleParsed = (path, textContent) => {
@@ -72,7 +83,9 @@ class AppComponent extends Component {
 
         <Grid.Row>
         <Grid.Column>
-          <ToolBar />
+          <ToolBar
+            onSearch={this.handleSearch}
+          />
         </Grid.Column>
         </Grid.Row>
 
@@ -80,6 +93,7 @@ class AppComponent extends Component {
         <Grid.Column className='main-col'>
           <TableView
             entries={this.state.entries}
+            searchFilter={this.state.searchFilter}
             onEntryClicked={this.handleEntryClicked}
           />
         </Grid.Column>

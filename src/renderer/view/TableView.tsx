@@ -14,11 +14,23 @@ export default class TableView extends Component {
   }
 
   renderEntries = () => {
-    return _.orderBy(
+    const entries = _.filter( // filter entries by the search bar
       this.props.entries,
+      (entry) => {
+        if (this.props.searchFilter) {
+          for (const value of Object.values(entry)) {
+            if (value.includes(this.props.searchFilter))
+              return true
+          }
+          return false
+        } else return true
+      }
+    )
+    return _.orderBy( // order entries by the selected column
+      entries,
       this.state.sortColumn,
       this.state.sortAscending ? 'asc' : 'desc'
-    ).map((entry) => (
+    ).map((entry) => ( // render all remaining, sorted entries
       <Table.Row
         key={entry.bibKey}
         onClick={this.handleEntryClicked(entry.bibKey)}
