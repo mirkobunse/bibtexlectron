@@ -5,6 +5,7 @@ import parseBibtex from './io/parseBibtex';
 import MenuBar from './MenuBar.tsx';
 import ToolBar from './ToolBar.tsx';
 import TableView from './view/TableView.tsx';
+import Editor from './Editor.tsx';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
@@ -13,7 +14,8 @@ const DEFAULT_STATE = {
   path: null,
   textContent: null,
   entries: null,
-  searchFilter: null
+  searchFilter: null,
+  openEntry: null
 }
 
 class AppComponent extends Component {
@@ -49,8 +51,8 @@ class AppComponent extends Component {
     this.setState({ searchFilter: filter })
   }
 
-  handleEntryClicked = (bibKey) => {
-    console.log(bibKey)
+  handleEntryClicked = (entry) => {
+    this.setState({ openEntry: entry });
   }
 
   // handleParsed = (path, textContent) => {
@@ -63,6 +65,10 @@ class AppComponent extends Component {
   //   }
   // }
 
+  handleEditorClose = () => {
+    this.setState({ openEntry: null });
+  }
+
   componentDidMount() {
     if (this.path) // open the default file on startup
       this.handleOpen(this.state.path);
@@ -71,6 +77,7 @@ class AppComponent extends Component {
   render() {
     return (
       <Grid padded className='layout-grid'>
+        <Editor openEntry={this.state.openEntry} onClose={this.handleEditorClose} />
         <Grid.Row>
           <Grid.Column>
             <MenuBar
