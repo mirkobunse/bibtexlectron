@@ -123,6 +123,17 @@ export default class Editor extends Component {
             </Table>
           </Form>
         )
+      } else if (this.state.activeTab === 'Links') {
+        return (
+          <Form>
+            <Table basic='very'>
+              <Table.Body>
+                {this.renderInputField('doi')}
+                {this.renderInputField('url')}
+              </Table.Body>
+            </Table>
+          </Form>
+        )
       } else if (this.state.activeTab === 'BibTeX') {
         return (
           <Form>
@@ -165,6 +176,11 @@ export default class Editor extends Component {
             <Menu.Item
               name='Optional fields'
               active={this.state.activeTab === 'Optional fields'}
+              onClick={this.handleTabClick}
+            />
+            <Menu.Item
+              name='Links'
+              active={this.state.activeTab === 'Links'}
               onClick={this.handleTabClick}
             />
             <Menu.Item
