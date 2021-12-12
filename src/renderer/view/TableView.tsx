@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Table } from 'semantic-ui-react';
 import EmptyView from './EmptyView.tsx';
 
@@ -36,11 +36,11 @@ export default class TableView extends Component {
         onClick={this.handleEntryClicked(entry.bibKey)}
         active={entry.bibKey === this.state.selectedKey}
       >
-        <Table.Cell>{entry.bibKey}</Table.Cell>
+        <Table.Cell collapsing>{entry.bibKey}</Table.Cell>
         <Table.Cell>{entry.author || entry.editor || ''}</Table.Cell>
         <Table.Cell>{entry.title || ''}</Table.Cell>
         <Table.Cell>{entry.journal || entry.booktitle || ''}</Table.Cell>
-        <Table.Cell>{entry.year || ''}</Table.Cell>
+        <Table.Cell collapsing>{entry.year || ''}</Table.Cell>
       </Table.Row>
     ))
   }
@@ -79,6 +79,7 @@ export default class TableView extends Component {
               <Table.HeaderCell
                 sorted={this.isSorted('bibKey')}
                 onClick={this.handleSort('bibKey')}
+                collapsing
               >
                 ID
               </Table.HeaderCell>
@@ -103,6 +104,7 @@ export default class TableView extends Component {
               <Table.HeaderCell
                 sorted={this.isSorted('year')}
                 onClick={this.handleSort('year')}
+                collapsing
               >
                 Year
               </Table.HeaderCell>
