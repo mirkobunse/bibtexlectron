@@ -74,7 +74,7 @@ export default class TableView extends Component {
     if (this.props.entries) {
       return (
         <Table sortable striped compact selectable className="table-view">
-          <Table.Header inverted>
+          <Table.Header>
             <Table.Row>
               <Table.HeaderCell
                 sorted={this.isSorted('bibKey')}
