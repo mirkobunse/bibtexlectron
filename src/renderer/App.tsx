@@ -9,6 +9,7 @@ import Editor from './Editor.tsx';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from 'fs';
+import electron from 'electron';
 
 const DEFAULT_STATE = {
   path: null,
@@ -53,6 +54,14 @@ class AppComponent extends Component {
 
   handleEntryClicked = (entry) => {
     this.setState({ openEntry: entry });
+  }
+
+  handleLinkClicked = (entry) => {
+    if (entry.url !== undefined) {
+      electron.shell.openExternal(entry.url)
+    } else if (entry.doi !== undefined) {
+      console.log(entry.doi) // TODO
+    }
   }
 
   // handleParsed = (path, textContent) => {
@@ -102,6 +111,7 @@ class AppComponent extends Component {
             entries={this.state.entries}
             searchFilter={this.state.searchFilter}
             onEntryClicked={this.handleEntryClicked}
+            onLinkClicked={this.handleLinkClicked}
           />
         </Grid.Column>
         </Grid.Row>

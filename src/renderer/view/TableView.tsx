@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { Component } from 'react';
-import { Table } from 'semantic-ui-react';
+import { Icon, Table } from 'semantic-ui-react';
 import EmptyView from './EmptyView.tsx';
 
 export default class TableView extends Component {
@@ -36,6 +36,14 @@ export default class TableView extends Component {
         onClick={this.handleEntryClicked(entry.bibKey)}
         active={entry.bibKey === this.state.selectedKey}
       >
+        <Table.Cell collapsing>
+          <Icon
+            name='file text'
+            link
+            fitted
+            disabled={entry.url === undefined && entry.doi === undefined}
+          />
+        </Table.Cell>
         <Table.Cell collapsing>{entry.bibKey}</Table.Cell>
         <Table.Cell>{entry.author || entry.editor || ''}</Table.Cell>
         <Table.Cell>{entry.title || ''}</Table.Cell>
@@ -61,12 +69,16 @@ export default class TableView extends Component {
   }
 
   handleEntryClicked = (bibKey) => {
-    return () => {
+    return (event) => {
       const entry = _.find(this.props.entries, (entry) => {
         return entry.bibKey === bibKey
       })
-      this.props.onEntryClicked(entry)
-      this.setState({ selectedKey: bibKey })
+      if (event.target.localName === 'i') { // file icon clicked
+        this.props.onLinkClicked(entry)
+      } else { // something else in the row has been clicked
+        this.props.onEntryClicked(entry)
+        this.setState({ selectedKey: bibKey })
+      }
     }
   }
 
@@ -76,6 +88,7 @@ export default class TableView extends Component {
         <Table sortable striped compact selectable className="table-view">
           <Table.Header>
             <Table.Row>
+              <Table.HeaderCell collapsing/>
               <Table.HeaderCell
                 sorted={this.isSorted('bibKey')}
                 onClick={this.handleSort('bibKey')}
