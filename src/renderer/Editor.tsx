@@ -12,6 +12,7 @@ import {
   Table,
   TextArea
 } from 'semantic-ui-react';
+import renderBibtex from './io/renderBibtex';
 
 const REQUIRED_FIELDS = { // https://tex.stackexchange.com/a/239046/223178
   article: ['author', 'title', 'journal', 'year'],
@@ -86,6 +87,12 @@ export default class Editor extends Component {
     )
   }
 
+  renderBibtexEntry = () => {
+    if (this.props.openEntry !== null)
+      return renderBibtex(this.props.openEntry)
+    else return ''
+  }
+
   renderActiveTab = () => {
     if (this.props.openEntry !== null) {
       if (this.state.activeTab === 'Comments') {
@@ -94,7 +101,7 @@ export default class Editor extends Component {
             <TextArea
               placeholder='What are your thoughts about this reference?'
               style={{ minHeight: 'calc(45vh - 30px)' }}
-              defaultValue={this.get('comment')}
+              value={this.get('comment')}
               onChange={this.handleFieldChange('comment')}
             />
           </Form>
@@ -138,8 +145,8 @@ export default class Editor extends Component {
         return (
           <Form>
             <TextArea
-              style={{ minHeight: 'calc(45vh - 30px)' }}
-              defaultValue='TODO: export BibTeX'
+              style={{ minHeight: 'calc(45vh - 30px)', fontFamily: 'monospace' }}
+              value={this.renderBibtexEntry()}
             />
           </Form>
         )
