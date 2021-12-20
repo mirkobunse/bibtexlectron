@@ -10,8 +10,9 @@
  */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import fs from 'fs';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, dialog, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -26,6 +27,38 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+/*
+ * promisifaction: convert a function that accepts a callback argument to
+ * a function that returns a Promise object.
+ */
+function readFile(path: string) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(
+      path,
+      'utf-8',
+      (error, data) => {
+        if (error)
+          reject(error)
+        else
+          resolve({ path, data })
+      }
+    );
+  });
+}
+
+ipcMain.handle('open', async (event, options) => {
+  return new Promise((resolve, reject) => {
+    dialog.showOpenDialog(options).then(result => {
+      if (result.canceled) {
+        resolve({ canceled: true })
+      } else {
+        // ipcMain.handle converts Promises of Promises to plain Promises
+        resolve(readFile(result.filePaths[0]))
+      }
+    }).catch(error => reject(error))
+  })
+});
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;

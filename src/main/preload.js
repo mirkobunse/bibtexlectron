@@ -19,5 +19,14 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.once(channel, (event, ...args) => func(...args));
       }
     },
+    invoke(channel, ...args) {
+      const validChannels = ['open'];
+      if (validChannels.includes(channel)) {
+        // Deliberately strip event as it includes `sender`
+        return ipcRenderer.invoke(channel, ...args);
+      } else {
+        return new Promise((resolve, reject) => reject("invalid channel " + channel))
+      }
+    },
   },
 });

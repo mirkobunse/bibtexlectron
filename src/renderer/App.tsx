@@ -8,8 +8,6 @@ import TableView from './view/TableView.tsx';
 import Editor from './Editor.tsx';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
-import fs from 'fs';
-import electron from 'electron';
 
 const DEFAULT_STATE = {
   path: null,
@@ -29,23 +27,22 @@ class AppComponent extends Component {
     this.setState(DEFAULT_STATE);
   }
 
-  handleOpen = (path) => {
-    fs.readFile(
-      path,
-      'utf-8',
-      (err, data) => { // parse the BibTeX file
-        if (err) throw err;
-        const textContent = data.toString();
+  handleOpen = () => {
+    window.electron.ipcRenderer.invoke('open', {
+      title: 'Open a file'
+    }).then(result => {
+      console.log(result)
+      if (!result.canceled) {
+        const textContent = result.data.toString();
         const entries = parseBibtex(textContent);
         console.log(entries);
 
         // trigger an update of this component
-        this.setState({ path, textContent, entries });
-
-        // parseAsync(textContent)
-        //   .then(this.handleParsed(path, textContent));
+        this.setState({ path: result.path, textContent, entries });
       }
-    );
+    }).catch(error => {
+      console.log(error)
+    })
   }
 
   handleSearch = (filter) => {
@@ -78,10 +75,10 @@ class AppComponent extends Component {
     this.setState({ openEntry: null });
   }
 
-  componentDidMount() {
-    if (this.path) // open the default file on startup
-      this.handleOpen(this.state.path);
-  }
+  // componentDidMount() {
+  //   if (this.path) // open the default file on startup
+  //     this.handleOpen(this.state.path);
+  // }
 
   render() {
     return (
