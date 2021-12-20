@@ -47,7 +47,7 @@ function readFile(path: string) {
   });
 }
 
-ipcMain.handle('open', async (event, options) => {
+ipcMain.handle('open', async (_, options) => {
   return new Promise((resolve, reject) => {
     dialog.showOpenDialog(options).then(result => {
       if (result.canceled) {
@@ -57,6 +57,20 @@ ipcMain.handle('open', async (event, options) => {
         resolve(readFile(result.filePaths[0]))
       }
     }).catch(error => reject(error))
+  })
+});
+
+ipcMain.handle('open-external', async (_, entry) => {
+  return new Promise((resolve, reject) => {
+    if (entry.url) {
+      shell.openExternal(entry.url)
+        .then(result => resolve(result))
+        .catch(error => reject(error))
+    } else if (entry.doi !== undefined) {
+      reject("openExternal not yet implemented for DOIs")
+    } else {
+      reject(entry.bibKey + " neither has a URL nor a DOI")
+    }
   })
 });
 

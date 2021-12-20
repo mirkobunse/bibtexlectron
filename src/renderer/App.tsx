@@ -54,11 +54,11 @@ class AppComponent extends Component {
   }
 
   handleLinkClicked = (entry) => {
-    if (entry.url !== undefined) {
-      electron.shell.openExternal(entry.url)
-    } else if (entry.doi !== undefined) {
-      console.log(entry.doi) // TODO
-    }
+    window.electron.ipcRenderer.invoke('open-external', entry).then(result => {
+      console.log("opened")
+    }).catch(error => {
+      console.log(error)
+    })
   }
 
   // handleParsed = (path, textContent) => {
