@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, shell } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -20,12 +20,15 @@ contextBridge.exposeInMainWorld('electron', {
       }
     },
     invoke(channel, ...args) {
-      const validChannels = ['open', 'open-external'];
+      const validChannels = ['open'];
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, ...args);
       } else {
         return new Promise((resolve, reject) => reject("invalid channel " + channel))
       }
     },
+  },
+  openExternal(url) {
+    return shell.openExternal(url) // return a Promise<void>
   },
 });

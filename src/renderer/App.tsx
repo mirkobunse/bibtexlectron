@@ -54,11 +54,12 @@ class AppComponent extends Component {
   }
 
   handleLinkClicked = (entry) => {
-    window.electron.ipcRenderer.invoke('open-external', entry).then(result => {
-      console.log("opened")
-    }).catch(error => {
-      console.log(error)
-    })
+    if (entry.url)
+      window.electron.openExternal(entry.url)
+    else if (entry.doi !== undefined)
+      console.log("TODO: openExternal from DOI")
+    else
+      console.log(entry.bibKey + " has neither a URL nor a DOI")
   }
 
   // handleParsed = (path, textContent) => {

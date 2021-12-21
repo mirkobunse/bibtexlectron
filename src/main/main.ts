@@ -60,20 +60,6 @@ ipcMain.handle('open', async (_, options) => {
   })
 });
 
-ipcMain.handle('open-external', async (_, entry) => {
-  return new Promise((resolve, reject) => {
-    if (entry.url) {
-      shell.openExternal(entry.url)
-        .then(result => resolve(result))
-        .catch(error => reject(error))
-    } else if (entry.doi !== undefined) {
-      reject("openExternal not yet implemented for DOIs")
-    } else {
-      reject(entry.bibKey + " neither has a URL nor a DOI")
-    }
-  })
-});
-
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
