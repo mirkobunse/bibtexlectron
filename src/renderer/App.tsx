@@ -19,6 +19,10 @@ declare global {
         once: (channel: string, func: (...args: any[]) => void) => void,
         invoke: (channel: string, ...args: any[]) => Promise<any>
       },
+      store: {
+        get: (key: string) => any,
+        set: (key: string, val: any) => void
+      },
       openExternal: (url: string) => void
     },
   }
@@ -41,6 +45,7 @@ class AppComponent extends Component<AppProps, AppState> {
 
   // reset all state when File->New is clicked
   handleNewFile = () => {
+    window.electron.store.set("path", undefined);
     this.setState({
       path: undefined,
       entries: undefined,
@@ -55,6 +60,7 @@ class AppComponent extends Component<AppProps, AppState> {
       title: 'Open a file'
     }).then(result => {
       if (result.data) {
+        window.electron.store.set("path", result.path);
         this.setState({ // set the state according to the file contents
           path: result.path,
           entries: parseBibtex(result.data)
@@ -85,10 +91,21 @@ class AppComponent extends Component<AppProps, AppState> {
     this.setState({ openEntry: undefined });
   }
 
-  // componentDidMount = () => {
-  //   if (this.path) // open the default file on startup
-  //     this.handleOpenFile(this.state.path);
-  // }
+  // open the last file on startup
+  componentDidMount = () => {
+    const path = window.electron.store.get("path");
+    if (path) { // open the default file on startup
+      window.electron.ipcRenderer.invoke('read-file', path)
+        .then(result => {
+          if (result.data) {
+            this.setState({ // set the state according to the file contents
+              path: result.path,
+              entries: parseBibtex(result.data)
+            });
+          }
+        }).catch(console.log)
+    }
+  }
 
   render() {
     return (

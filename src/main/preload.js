@@ -40,13 +40,26 @@ contextBridge.exposeInMainWorld('electron', {
      * which the main process answers via ipcMain.handle(channel, ...).
      */
     invoke(channel, ...args) {
-      const validChannels = ['open-file'];
+      const validChannels = ['open-file', 'read-file'];
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, ...args);
       } else {
         return new Promise((resolve, reject) => reject("invalid channel " + channel))
       }
     },
+  },
+
+  /*
+   * electron-store for persistance of preferences, app state, cache, etc
+   */
+  store: {
+    get(val) {
+      return ipcRenderer.sendSync("electron-store-get", val);
+    },
+    set(property, val) {
+      ipcRenderer.send("electron-store-set", property, val);
+    },
+    // TODO: other methods like has(), reset(), etc.
   },
 
   /*

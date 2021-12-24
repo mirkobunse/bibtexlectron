@@ -17,6 +17,9 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import Store from "electron-store";
+
+const store = new Store();
 
 export default class AppUpdater {
   constructor() {
@@ -61,6 +64,20 @@ ipcMain.handle('open-file', async (_, options) => {
       }
     }).catch(reject)
   })
+});
+
+ipcMain.handle('read-file', async (_, path) => {
+  return readFile(path) // like ipcMain.handle('open-file', ...) but with a known path
+});
+
+/*
+ * IPC for the Electron Store
+ */
+ipcMain.on("electron-store-get", async (event, val) => {
+  event.returnValue = store.get(val);
+});
+ipcMain.on("electron-store-set", async (_, key, val) => {
+  store.set(key, val);
 });
 
 /*
