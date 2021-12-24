@@ -10,19 +10,14 @@ import Editor from './Editor';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 
-type OpenResult = {
-  canceled?: boolean,
-  path?: string,
-  data?: string,
-}
-
+// type information about window.electron, see src/main/preload.js
 declare global {
   interface Window {
     electron: {
       ipcRenderer: {
-        on: (channel: string, func: (...args: any[]) => void) => any,
+        on: (channel: string, func: (...args: any[]) => void) => void,
         once: (channel: string, func: (...args: any[]) => void) => void,
-        invoke: (channel: string, ...args: any[]) => Promise<OpenResult>
+        invoke: (channel: string, ...args: any[]) => Promise<any>
       },
       openExternal: (url: string) => void
     },
@@ -52,16 +47,16 @@ class AppComponent extends Component<AppProps, AppState> {
     this.state = DEFAULT_STATE;
   }
 
-  handleNew = () => {
+  handleNewFile = () => {
     this.setState(DEFAULT_STATE);
   }
 
-  handleOpen = () => {
-    window.electron.ipcRenderer.invoke('open', {
+  handleOpenFile = () => {
+    window.electron.ipcRenderer.invoke('open-file', {
       title: 'Open a file'
     }).then(result => {
       console.log(result)
-      if (!result.canceled && result.data) {
+      if (result.data) {
         const textContent = result.data;
         const entries = parseBibtex(textContent);
         console.log(entries);
@@ -97,7 +92,7 @@ class AppComponent extends Component<AppProps, AppState> {
 
   // componentDidMount() {
   //   if (this.path) // open the default file on startup
-  //     this.handleOpen(this.state.path);
+  //     this.handleOpenFile(this.state.path);
   // }
 
   render() {
@@ -108,8 +103,8 @@ class AppComponent extends Component<AppProps, AppState> {
           <Grid.Column>
             <MenuBar
               path={this.state.path}
-              onOpen={this.handleOpen}
-              onNew={this.handleNew}
+              onOpenFile={this.handleOpenFile}
+              onNewFile={this.handleNewFile}
             />
           </Grid.Column>
         </Grid.Row>

@@ -40,7 +40,7 @@ contextBridge.exposeInMainWorld('electron', {
      * which the main process answers via ipcMain.handle(channel, ...).
      */
     invoke(channel, ...args) {
-      const validChannels = ['open'];
+      const validChannels = ['open-file'];
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, ...args);
       } else {

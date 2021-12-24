@@ -3,8 +3,8 @@ import { Dropdown, Menu } from 'semantic-ui-react';
 
 type MenuBarProps = {
   path?: string,
-  onNew: () => void,
-  onOpen: () => void
+  onNewFile: () => void,
+  onOpenFile: () => void
 }
 
 export default class MenuBar extends Component<MenuBarProps> {
@@ -16,12 +16,12 @@ export default class MenuBar extends Component<MenuBarProps> {
             <Dropdown.Item
               text='New'
               description='ctrl + n'
-              onClick={this.props.onNew}
+              onClick={this.props.onNewFile}
             />
             <Dropdown.Item
               text='Open...'
               description='ctrl + o'
-              onClick={this.props.onOpen}
+              onClick={this.props.onOpenFile}
             />
             <Dropdown.Item text='Save' description='ctrl + s' />
             <Dropdown.Item text='Save as...' description='ctrl + shift + s' />

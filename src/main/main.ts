@@ -47,11 +47,11 @@ function readFile(path: string) {
   });
 }
 
-ipcMain.handle('open', async (_, options) => {
+ipcMain.handle('open-file', async (_, options) => {
   return new Promise((resolve, reject) => {
     dialog.showOpenDialog(options).then(result => {
       if (result.canceled) {
-        resolve({ canceled: true })
+        resolve({}) // an empty result indicates a cancellation
       } else {
         // ipcMain.handle converts Promises of Promises to plain Promises
         resolve(readFile(result.filePaths[0]))
