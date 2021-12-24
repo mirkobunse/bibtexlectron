@@ -1,20 +1,27 @@
-import { Component } from 'react'
+import { Component, MouseEvent } from 'react'
 import {
   Button,
+  ButtonProps,
   Dropdown,
   Form,
-  Grid,
   Header,
   Input,
   Menu,
+  MenuItemProps,
   Modal,
+  ModalProps,
   Segment,
   Table,
-  TextArea
+  TextArea,
 } from 'semantic-ui-react';
+import { Entry } from './io/ast';
 import renderBibtex from './io/renderBibtex';
 
-const REQUIRED_FIELDS = { // https://tex.stackexchange.com/a/239046/223178
+/*
+ * You find the optional and required fields of BibTeX at
+ * https://tex.stackexchange.com/a/239046/223178
+ */
+const REQUIRED_FIELDS: {[type: string]: string[]} = {
   article: ['author', 'title', 'journal', 'year'],
   book: ['author', 'editor', 'title', 'publisher', 'year'], // author OR editor
   incollection: ['author', 'title', 'booktitle', 'publisher', 'year'],
@@ -26,7 +33,7 @@ const REQUIRED_FIELDS = { // https://tex.stackexchange.com/a/239046/223178
   unpublished: ['author', 'title', 'note'],
 }
 
-const OPTIONAL_FIELDS = {
+const OPTIONAL_FIELDS: {[type: string]: string[]} = {
   article: ['volume', 'number', 'pages', 'month', 'note'],
   book: ['volume', 'number', 'series', 'address', 'edition', 'month', 'note'], // volume OR number
   incollection: ['editor', 'volume', 'number', 'series', 'type', 'chapter', 'pages', 'address', 'edition', 'month', 'note'], // volume OR number
@@ -45,33 +52,44 @@ const ENTRY_TYPES = Object.keys(OPTIONAL_FIELDS).map((key) => ({
   value: key.toLowerCase()
 })) // options of an entryType Dropdown
 
-export default class Editor extends Component {
-  constructor(props) {
+type EditorProps = {
+  openEntry?: Entry,
+  onClose?: (event: MouseEvent<HTMLElement>, data: ButtonProps | ModalProps) => void
+}
+type EditorState = {
+  activeTab: string,
+}
+
+export default class Editor extends Component<EditorProps, EditorState> {
+  constructor(props: EditorProps) {
     super(props);
     this.state = { activeTab: 'Comments' };
   }
 
-  get = (fieldName, fallbackName) => {
-    if (this.props.openEntry !== null) {
+  get = (fieldName: string, fallbackName?: string) => {
+    if (this.props.openEntry !== undefined) {
       const propertyValue = this.props.openEntry[fieldName]
-      if (fallbackName !== null && propertyValue === null)
+      if (fallbackName !== undefined && propertyValue === undefined)
         return this.props.openEntry[fallbackName]
       else
         return propertyValue
     } else return ''
   }
 
-  handleTabClick = (event, target) => {
-    this.setState({ activeTab: target.name });
+  handleTabClick = (_: any, target: MenuItemProps) => {
+    if (target.name !== undefined)
+      this.setState({ activeTab: target.name });
   }
 
-  handleFieldChange = (fieldName) => {
-    return (event, target) => {
-      this.props.openEntry[fieldName] = target.value
+  handleFieldChange = (fieldName: string) => {
+    return (_: any, target: any) => {
+      if (this.props.openEntry !== undefined)
+        if (target.value !== undefined)
+          this.props.openEntry[fieldName] = target.value
     }
   }
 
-  renderInputField = (fieldName) => {
+  renderInputField = (fieldName: string) => {
     return (
       <Table.Row key={fieldName}>
         <Table.Cell collapsing>{fieldName}</Table.Cell>
@@ -88,13 +106,13 @@ export default class Editor extends Component {
   }
 
   renderBibtexEntry = () => {
-    if (this.props.openEntry !== null)
+    if (this.props.openEntry !== undefined)
       return renderBibtex(this.props.openEntry)
     else return ''
   }
 
   renderActiveTab = () => {
-    if (this.props.openEntry !== null) {
+    if (this.props.openEntry !== undefined) {
       if (this.state.activeTab === 'Comments') {
         return (
           <Form>
@@ -150,13 +168,18 @@ export default class Editor extends Component {
             />
           </Form>
         )
+      } else {
+        console.log("ERROR: illegal activeTab =", this.state.activeTab)
+        return <Form></Form>
       }
+    } else {
+      return <Form></Form>
     }
   }
 
   render() {
     return (
-      <Modal open={this.props.openEntry !== null} onClose={this.props.onClose}>
+      <Modal open={this.props.openEntry !== undefined} onClose={this.props.onClose}>
         <Modal.Content>
           <Header>
             {this.get('bibKey')}

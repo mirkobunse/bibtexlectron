@@ -1,7 +1,13 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Dropdown, Menu } from 'semantic-ui-react';
 
-export default class MenuBar extends Component {
+type MenuBarProps = {
+  path?: string,
+  onNew: () => void,
+  onOpen: () => void
+}
+
+export default class MenuBar extends Component<MenuBarProps> {
   render() {
     return (
       <Menu inverted fluid className='menu-bar'>

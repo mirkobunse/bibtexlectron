@@ -1,22 +1,35 @@
-import _ from 'lodash'
+import _ from 'lodash';
 import { Component } from 'react';
 import { Icon, Table } from 'semantic-ui-react';
-import EmptyView from './EmptyView.tsx';
+import EmptyView from './EmptyView';
+import { Entry } from '../io/ast';
 
-export default class TableView extends Component {
-  constructor(props) {
+type TableViewProps = {
+  entries?: Entry[],
+  searchFilter?: string,
+  onLinkClicked: (entry: Entry) => void,
+  onEntryClicked: (entry: Entry) => void
+}
+type TableViewState = {
+  sortColumn: string,
+  sortAscending: boolean,
+  selectedKey?: string,
+}
+
+export default class TableView extends Component<TableViewProps, TableViewState> {
+  constructor(props: TableViewProps) {
     super(props);
     this.state = { // sort by descending year
       sortColumn: 'year',
       sortAscending: false,
-      selectedKey: null
+      selectedKey: undefined
     }
   }
 
   renderEntries = () => {
     const entries = _.filter( // filter entries by the search bar
       this.props.entries,
-      (entry) => {
+      (entry: Entry) => {
         if (this.props.searchFilter) {
           for (const value of Object.values(entry)) {
             if (value.includes(this.props.searchFilter))
@@ -30,7 +43,7 @@ export default class TableView extends Component {
       entries,
       this.state.sortColumn,
       this.state.sortAscending ? 'asc' : 'desc'
-    ).map((entry) => ( // render all remaining, sorted entries
+    ).map((entry: Entry) => ( // render all remaining, sorted entries
       <Table.Row
         key={entry.bibKey}
         onClick={this.handleEntryClicked(entry.bibKey)}
@@ -53,7 +66,7 @@ export default class TableView extends Component {
     ))
   }
 
-  handleSort = (column) => {
+  handleSort = (column: string) => {
     return () => {
       if (this.state.sortColumn === column) // change direction
         this.setState({ sortAscending: !this.state.sortAscending })
@@ -62,15 +75,15 @@ export default class TableView extends Component {
     }
   }
 
-  isSorted = (column) => {
+  isSorted = (column: string) => {
     if (this.state.sortColumn === column) {
       return this.state.sortAscending ? 'ascending' : 'descending'
-    } else return null
+    } else return undefined
   }
 
-  handleEntryClicked = (bibKey) => {
-    return (event) => {
-      const entry = _.find(this.props.entries, (entry) => {
+  handleEntryClicked = (bibKey: string) => {
+    return (event: any) => {
+      const entry = _.find(this.props.entries, (entry: Entry) => {
         return entry.bibKey === bibKey
       })
       if (event.target.localName === 'i') { // file icon clicked

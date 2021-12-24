@@ -1,24 +1,53 @@
 import { Component } from 'react';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grid } from 'semantic-ui-react';
+import { Entry } from './io/ast';
 import parseBibtex from './io/parseBibtex';
-import MenuBar from './MenuBar.tsx';
-import ToolBar from './ToolBar.tsx';
-import TableView from './view/TableView.tsx';
-import Editor from './Editor.tsx';
+import MenuBar from './MenuBar';
+import ToolBar from './ToolBar';
+import TableView from './view/TableView';
+import Editor from './Editor';
 import '../../node_modules/semantic-ui-css/semantic.min.css';
 import './App.css';
 
-const DEFAULT_STATE = {
-  path: null,
-  textContent: null,
-  entries: null,
-  searchFilter: null,
-  openEntry: null
+type OpenResult = {
+  canceled?: boolean,
+  path?: string,
+  data?: string,
 }
 
-class AppComponent extends Component {
-  constructor(props) {
+declare global {
+  interface Window {
+    electron: {
+      ipcRenderer: {
+        on: (channel: string, func: (...args: any[]) => void) => any,
+        once: (channel: string, func: (...args: any[]) => void) => void,
+        invoke: (channel: string, ...args: any[]) => Promise<OpenResult>
+      },
+      openExternal: (url: string) => void
+    },
+  }
+}
+
+type AppProps = {} // empty type; the AppComponent has no props
+type AppState = {
+  path?: string,
+  textContent?: string,
+  entries?: Entry[],
+  searchFilter?: string,
+  openEntry?: Entry
+}
+
+const DEFAULT_STATE = {
+  path: undefined,
+  textContent: undefined,
+  entries: undefined,
+  searchFilter: undefined,
+  openEntry: undefined
+}
+
+class AppComponent extends Component<AppProps, AppState> {
+  constructor(props: AppProps) {
     super(props);
     this.state = DEFAULT_STATE;
   }
@@ -32,8 +61,8 @@ class AppComponent extends Component {
       title: 'Open a file'
     }).then(result => {
       console.log(result)
-      if (!result.canceled) {
-        const textContent = result.data.toString();
+      if (!result.canceled && result.data) {
+        const textContent = result.data;
         const entries = parseBibtex(textContent);
         console.log(entries);
 
@@ -45,15 +74,15 @@ class AppComponent extends Component {
     })
   }
 
-  handleSearch = (filter) => {
+  handleSearch = (filter?: string) => {
     this.setState({ searchFilter: filter })
   }
 
-  handleEntryClicked = (entry) => {
+  handleEntryClicked = (entry: Entry) => {
     this.setState({ openEntry: entry });
   }
 
-  handleLinkClicked = (entry) => {
+  handleLinkClicked = (entry: Entry) => {
     if (entry.url)
       window.electron.openExternal(entry.url)
     else if (entry.doi !== undefined)
@@ -62,18 +91,8 @@ class AppComponent extends Component {
       console.log(entry.bibKey + " has neither a URL nor a DOI")
   }
 
-  // handleParsed = (path, textContent) => {
-  //   return (data) => {
-  //     this.setState({ // trigger an update of this component
-  //       path,
-  //       textContent,
-  //       entries: cite.set(data).get()
-  //     });
-  //   }
-  // }
-
   handleEditorClose = () => {
-    this.setState({ openEntry: null });
+    this.setState({ openEntry: undefined });
   }
 
   // componentDidMount() {

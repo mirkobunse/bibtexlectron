@@ -10,8 +10,12 @@ const filterOptions = [
   { key: 'French', text: 'French', value: 'French' },
 ]
 
-export default class ToolBar extends Component {
-  handleSearch = (event, data) => {
+type ToolBarProps = {
+  onSearch: (filter?: string) => void
+}
+
+export default class ToolBar extends Component<ToolBarProps> {
+  handleSearch = (_: any, data: any) => {
     this.props.onSearch(data.value)
   }
 

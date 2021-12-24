@@ -41,7 +41,7 @@ function readFile(path: string) {
         if (error)
           reject(error)
         else
-          resolve({ path, data })
+          resolve({ path, data: data.toString() })
       }
     );
   });
