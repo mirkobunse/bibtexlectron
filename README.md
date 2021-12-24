@@ -3,7 +3,7 @@
 bibtexlectron is based on the [electron-react-boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate) and on [Semantic UI](https://react.semantic-ui.com/) components.
 
 
-## Install
+## Usage
 
 Install all dependencies through the Node.js package manager. Moreover, the current version of Semantic UI requires a double semi-colon to be replaced with a single one.
 
@@ -13,7 +13,7 @@ sed -i "s/;;/;/g" node_modules/semantic-ui-css/semantic.min.css
 ```
 
 
-## Starting Development
+### Starting for development
 
 Start the app in the `dev` environment:
 
@@ -22,7 +22,7 @@ npm start
 ```
 
 
-## Packaging for Production
+### Packaging for production
 
 To package apps for the local platform:
 
