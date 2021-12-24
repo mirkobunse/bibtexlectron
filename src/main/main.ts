@@ -47,25 +47,34 @@ function readFile(path: string) {
   });
 }
 
+/*
+ * handle open-file requests coming via IPC: show a dialog for opening a file,
+ * read the selected file, and return the path and the text content of this file.
+ */
 ipcMain.handle('open-file', async (_, options) => {
   return new Promise((resolve, reject) => {
     dialog.showOpenDialog(options).then(result => {
       if (result.canceled) {
         resolve({}) // an empty result indicates a cancellation
       } else {
-        // ipcMain.handle converts Promises of Promises to plain Promises
-        resolve(readFile(result.filePaths[0]))
+        resolve(readFile(result.filePaths[0])) // return a Promise
       }
-    }).catch(error => reject(error))
+    }).catch(reject)
   })
 });
 
+/*
+ * the IPC example from the electron-react-boilerplate
+ */
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+/*
+ * any other stuff from the electron-react-boilerplate
+ */
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

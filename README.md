@@ -33,9 +33,33 @@ npm run package
 
 ## Learning React: typical fallacies
 
-In addition to BibTeX management, bibtexlectron is intended to serve as a learning platform for React developers. Following this intention, we address some of the typical fallacies that might occur to React newcomers.
+In addition to BibTeX management, bibtexlectron is intended to serve as a learning platform for React developers. Following this intention, we address some of the typical fallacies that might appear to React newcomers.
 
-### State-full Components
+### Structure of this project
+
+The electron-react-boilerplate is separated in an Electron main process (which draws the window, reads and writes files, etc) and a React-based renderer process (essentially a website that is rendered in the window canvas). The two process communicate via Electrons inter-process communication (IPC) facilities. The file structure is as follows:
+
+```
+bibtexlectron/
+ └─┬─ src/
+   ├─┬─ main/
+   │ └─┬─ main.ts      // the main process, e.g. opening and reading files
+   │   ├─ menu.ts      // the menu bar of the Electron window
+   │   ├─ preload.js   // IPC setup
+   │   └─ util.ts
+   ├─┬─ renderer/
+   │ └─┬─ App.css      // custom styling
+   │   ├─ App.tsx      // the renderer process
+   │   ├─ Editor.tsx   // a modal for editing BibTeX entries
+   │   ├─ index.ejs    // part of the entrypoint which opens App.tsx
+   │   ├─ index.tsx    // part of the entrypoint which opens App.tsx
+   │   ├─ MenuBar.tsx  // an in-app menu bar
+   │   ├─ ToolBar.tsx  // a tool bar
+   │   ├─ io/          // parsing and writing BibTeX from plain text
+   ┊   └─ view/        // BibTeX views, most importantly the TableView
+```
+
+### Stateful React Components
 
 The state of a Component is always stored in `this.state`. Members of this variable, like `this.state.value` in the example below, can be read from anywhere inside the component. A change of the state, however, is only possible through an invocation of `this.setState({ ... });`; otherwise, the component will not be updated.
 
@@ -60,11 +84,11 @@ class StatefulExample extends Component {
 }
 ```
 
-### Shared state
+### Shared state in React Components
 
-Components are very much isolated. When multiple components need to share some state, it is therefore necessary to implement this state in a common ancestor of both components. This concept is known as [lifting state up](https://reactjs.org/docs/lifting-state-up.html). In short, you need to ensure the following:
+Each components is isolated. When multiple components need to share some state, it is therefore necessary to implement this state in a common ancestor of both components. This concept is known as [lifting state up](https://reactjs.org/docs/lifting-state-up.html). In short, you need to ensure the following:
 
-- a common ancestor of all sharing components takes care of retrieving `this.state` and of invoking `this.setState`.
+- a common ancestor of all sharing components takes care of reading `this.state` and of invoking `this.setState`.
 - all sharing components retrieve the value of this state through `this.props`
 - all sharing components make changes to the common state through callbacks, which the ancestor provides through props as well.
 
@@ -96,8 +120,8 @@ class CallbackExample extends Component {
 }
 ```
 
-### Reading and writing files through the "fs" module
+### IPC example: reading and writing files through the "fs" module
 
-File access through the `fs` module is disabled by default because this module is typically unavailable on websites. However, we are developing a desktop app here, so this aspect of a website's security concerns does not apply for us.
+In electron, it is a best practice to keep the `fs` module disabled within the renderer process. This best-practice also holds for all other so-called native modules which are not available within websites.
 
-We need to manually activate the possibility to use the `fs` module. This process is documented in the [native modules section](https://electron-react-boilerplate.js.org/docs/native-modules) of the boilerplate project, unfortunately without a hint that this process actually solves our issue.
+Therefore, any native module, such as `fs`, needs to be called from the main process, which then provides the results to the renderer process via IPC. For instance, the renderer can ask the main process to read a file.

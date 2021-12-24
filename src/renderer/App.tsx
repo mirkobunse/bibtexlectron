@@ -24,49 +24,43 @@ declare global {
   }
 }
 
+// type information about properties and state of the AppComponent
 type AppProps = {} // empty type; the AppComponent has no props
 type AppState = {
   path?: string,
-  textContent?: string,
   entries?: Entry[],
   searchFilter?: string,
   openEntry?: Entry
 }
 
-const DEFAULT_STATE = {
-  path: undefined,
-  textContent: undefined,
-  entries: undefined,
-  searchFilter: undefined,
-  openEntry: undefined
-}
-
 class AppComponent extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
-    this.state = DEFAULT_STATE;
+    this.state = {};
   }
 
+  // reset all state when File->New is clicked
   handleNewFile = () => {
-    this.setState(DEFAULT_STATE);
+    this.setState({
+      path: undefined,
+      entries: undefined,
+      searchFilter: undefined,
+      openEntry: undefined
+    });
   }
 
+  // show an opening dialog and retrieve the text content of the selected file
   handleOpenFile = () => {
     window.electron.ipcRenderer.invoke('open-file', {
       title: 'Open a file'
     }).then(result => {
-      console.log(result)
       if (result.data) {
-        const textContent = result.data;
-        const entries = parseBibtex(textContent);
-        console.log(entries);
-
-        // trigger an update of this component
-        this.setState({ path: result.path, textContent, entries });
+        this.setState({ // set the state according to the file contents
+          path: result.path,
+          entries: parseBibtex(result.data)
+        });
       }
-    }).catch(error => {
-      console.log(error)
-    })
+    }).catch(console.log)
   }
 
   handleSearch = (filter?: string) => {
@@ -77,6 +71,7 @@ class AppComponent extends Component<AppProps, AppState> {
     this.setState({ openEntry: entry });
   }
 
+  // open full-text in browser when the file icon of an entry is clicked
   handleLinkClicked = (entry: Entry) => {
     if (entry.url)
       window.electron.openExternal(entry.url)
@@ -90,7 +85,7 @@ class AppComponent extends Component<AppProps, AppState> {
     this.setState({ openEntry: undefined });
   }
 
-  // componentDidMount() {
+  // componentDidMount = () => {
   //   if (this.path) // open the default file on startup
   //     this.handleOpenFile(this.state.path);
   // }
@@ -132,6 +127,7 @@ class AppComponent extends Component<AppProps, AppState> {
   }
 }
 
+// routing
 export default function App() {
   return (
     <Router>
