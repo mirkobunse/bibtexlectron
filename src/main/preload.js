@@ -53,11 +53,14 @@ contextBridge.exposeInMainWorld('electron', {
    * electron-store for persistance of preferences, app state, cache, etc
    */
   store: {
-    get(val) {
-      return ipcRenderer.sendSync("electron-store-get", val);
+    get(property) {
+      return ipcRenderer.sendSync("electron-store-get", property);
     },
     set(property, val) {
       ipcRenderer.send("electron-store-set", property, val);
+    },
+    delete(property) {
+      ipcRenderer.send("electron-store-delete", property);
     },
     // TODO: other methods like has(), reset(), etc.
   },

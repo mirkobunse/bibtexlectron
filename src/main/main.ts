@@ -79,6 +79,9 @@ ipcMain.on("electron-store-get", async (event, val) => {
 ipcMain.on("electron-store-set", async (_, key, val) => {
   store.set(key, val);
 });
+ipcMain.on("electron-store-delete", async (_, key) => {
+  store.delete(key);
+});
 
 /*
  * the IPC example from the electron-react-boilerplate

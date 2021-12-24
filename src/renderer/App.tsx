@@ -21,7 +21,8 @@ declare global {
       },
       store: {
         get: (key: string) => any,
-        set: (key: string, val: any) => void
+        set: (key: string, val: any) => void,
+        delete: (key: string) => void
       },
       openExternal: (url: string) => void
     },
@@ -45,7 +46,7 @@ class AppComponent extends Component<AppProps, AppState> {
 
   // reset all state when File->New is clicked
   handleNewFile = () => {
-    window.electron.store.set("path", undefined);
+    window.electron.store.delete("path");
     this.setState({
       path: undefined,
       entries: undefined,
