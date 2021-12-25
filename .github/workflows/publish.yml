@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          sed -i.bak "s/;;/;/g" node_modules/semantic-ui-css/semantic.min.css
+          sed -i".bak" "s/;;/;/g" node_modules/semantic-ui-css/semantic.min.css
 
       - name: Publish releases
         env:
