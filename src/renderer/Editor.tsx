@@ -1,4 +1,4 @@
-import { Component, MouseEvent } from 'react'
+import { Component, MouseEvent } from 'react';
 import {
   Button,
   ButtonProps,
@@ -21,7 +21,7 @@ import renderBibtex from './io/renderBibtex';
  * You find the optional and required fields of BibTeX at
  * https://tex.stackexchange.com/a/239046/223178
  */
-const REQUIRED_FIELDS: {[type: string]: string[]} = {
+const REQUIRED_FIELDS: { [type: string]: string[] } = {
   article: ['author', 'title', 'journal', 'year'],
   book: ['author', 'editor', 'title', 'publisher', 'year'], // author OR editor
   incollection: ['author', 'title', 'booktitle', 'publisher', 'year'],
@@ -31,34 +31,68 @@ const REQUIRED_FIELDS: {[type: string]: string[]} = {
   phdthesis: ['author', 'title', 'school', 'year'],
   techreport: ['author', 'title', 'institution', 'year'],
   unpublished: ['author', 'title', 'note'],
-}
+};
 
-const OPTIONAL_FIELDS: {[type: string]: string[]} = {
+const OPTIONAL_FIELDS: { [type: string]: string[] } = {
   article: ['volume', 'number', 'pages', 'month', 'note'],
   book: ['volume', 'number', 'series', 'address', 'edition', 'month', 'note'], // volume OR number
-  incollection: ['editor', 'volume', 'number', 'series', 'type', 'chapter', 'pages', 'address', 'edition', 'month', 'note'], // volume OR number
-  inproceedings: ['editor', 'volume', 'number', 'series', 'pages', 'address', 'month', 'organization', 'publisher', 'note'], // volume OR number
-  manual: ['author', 'organization', 'address', 'edition', 'month', 'year', 'note'],
+  incollection: [
+    'editor',
+    'volume',
+    'number',
+    'series',
+    'type',
+    'chapter',
+    'pages',
+    'address',
+    'edition',
+    'month',
+    'note',
+  ], // volume OR number
+  inproceedings: [
+    'editor',
+    'volume',
+    'number',
+    'series',
+    'pages',
+    'address',
+    'month',
+    'organization',
+    'publisher',
+    'note',
+  ], // volume OR number
+  manual: [
+    'author',
+    'organization',
+    'address',
+    'edition',
+    'month',
+    'year',
+    'note',
+  ],
   mastersthesis: ['type', 'address', 'month', 'note'],
   misc: ['author', 'title', 'howpublished', 'month', 'year', 'note'],
   phdthesis: ['type', 'address', 'month', 'note'],
   techreport: ['type', 'number', 'address', 'month', 'note'],
   unpublished: ['month', 'year'],
-}
+};
 
 const ENTRY_TYPES = Object.keys(OPTIONAL_FIELDS).map((key) => ({
   key: key.toLowerCase(),
   text: key.toLowerCase(),
-  value: key.toLowerCase()
-})) // options of an entryType Dropdown
+  value: key.toLowerCase(),
+})); // options of an entryType Dropdown
 
 type EditorProps = {
-  openEntry?: Entry,
-  onClose?: (event: MouseEvent<HTMLElement>, data: ButtonProps | ModalProps) => void
-}
+  openEntry?: Entry;
+  onClose?: (
+    event: MouseEvent<HTMLElement>,
+    data: ButtonProps | ModalProps
+  ) => void;
+};
 type EditorState = {
-  activeTab: string,
-}
+  activeTab: string;
+};
 
 export default class Editor extends Component<EditorProps, EditorState> {
   constructor(props: EditorProps) {
@@ -68,26 +102,25 @@ export default class Editor extends Component<EditorProps, EditorState> {
 
   get = (fieldName: string, fallbackName?: string) => {
     if (this.props.openEntry !== undefined) {
-      const propertyValue = this.props.openEntry[fieldName]
+      const propertyValue = this.props.openEntry[fieldName];
       if (fallbackName !== undefined && propertyValue === undefined)
-        return this.props.openEntry[fallbackName]
-      else
-        return propertyValue
-    } else return ''
-  }
+        return this.props.openEntry[fallbackName];
+      return propertyValue;
+    }
+    return '';
+  };
 
   handleTabClick = (_: any, target: MenuItemProps) => {
-    if (target.name !== undefined)
-      this.setState({ activeTab: target.name });
-  }
+    if (target.name !== undefined) this.setState({ activeTab: target.name });
+  };
 
   handleFieldChange = (fieldName: string) => {
     return (_: any, target: any) => {
       if (this.props.openEntry !== undefined)
         if (target.value !== undefined)
-          this.props.openEntry[fieldName] = target.value
-    }
-  }
+          this.props.openEntry[fieldName] = target.value;
+    };
+  };
 
   renderInputField = (fieldName: string) => {
     return (
@@ -96,20 +129,20 @@ export default class Editor extends Component<EditorProps, EditorState> {
         <Table.Cell>
           <Input
             fluid
-            type='text'
+            type="text"
             defaultValue={this.get(fieldName)}
             onChange={this.handleFieldChange(fieldName)}
           />
         </Table.Cell>
       </Table.Row>
-    )
-  }
+    );
+  };
 
   renderBibtexEntry = () => {
     if (this.props.openEntry !== undefined)
-      return renderBibtex(this.props.openEntry)
-    else return ''
-  }
+      return renderBibtex(this.props.openEntry);
+    return '';
+  };
 
   renderActiveTab = () => {
     if (this.props.openEntry !== undefined) {
@@ -117,69 +150,73 @@ export default class Editor extends Component<EditorProps, EditorState> {
         return (
           <Form>
             <TextArea
-              placeholder='What are your thoughts about this reference?'
+              placeholder="What are your thoughts about this reference?"
               style={{ minHeight: 'calc(45vh - 30px)' }}
               value={this.get('comment')}
               onChange={this.handleFieldChange('comment')}
             />
           </Form>
-        )
-      } else if (this.state.activeTab === 'Required fields') {
-        const entryType = this.props.openEntry.entryType.toLowerCase()
-        const fields = REQUIRED_FIELDS[entryType].map(this.renderInputField)
+        );
+      }
+      if (this.state.activeTab === 'Required fields') {
+        const entryType = this.props.openEntry.entryType.toLowerCase();
+        const fields = REQUIRED_FIELDS[entryType].map(this.renderInputField);
         return (
           <Form>
-            <Table basic='very'>
-              <Table.Body>
-                {fields}
-              </Table.Body>
+            <Table basic="very">
+              <Table.Body>{fields}</Table.Body>
             </Table>
           </Form>
-        )
-      } else if (this.state.activeTab === 'Optional fields') {
-        const entryType = this.props.openEntry.entryType.toLowerCase()
-        const fields = OPTIONAL_FIELDS[entryType].map(this.renderInputField)
+        );
+      }
+      if (this.state.activeTab === 'Optional fields') {
+        const entryType = this.props.openEntry.entryType.toLowerCase();
+        const fields = OPTIONAL_FIELDS[entryType].map(this.renderInputField);
         return (
           <Form>
-            <Table basic='very'>
-              <Table.Body>
-                {fields}
-              </Table.Body>
+            <Table basic="very">
+              <Table.Body>{fields}</Table.Body>
             </Table>
           </Form>
-        )
-      } else if (this.state.activeTab === 'Links') {
+        );
+      }
+      if (this.state.activeTab === 'Links') {
         return (
           <Form>
-            <Table basic='very'>
+            <Table basic="very">
               <Table.Body>
                 {this.renderInputField('doi')}
                 {this.renderInputField('url')}
               </Table.Body>
             </Table>
           </Form>
-        )
-      } else if (this.state.activeTab === 'BibTeX') {
+        );
+      }
+      if (this.state.activeTab === 'BibTeX') {
         return (
           <Form>
             <TextArea
-              style={{ minHeight: 'calc(45vh - 30px)', fontFamily: 'monospace' }}
+              style={{
+                minHeight: 'calc(45vh - 30px)',
+                fontFamily: 'monospace',
+              }}
               value={this.renderBibtexEntry()}
             />
           </Form>
-        )
-      } else {
-        console.log("ERROR: illegal activeTab =", this.state.activeTab)
-        return <Form></Form>
+        );
       }
-    } else {
-      return <Form></Form>
+      console.log('ERROR: illegal activeTab =', this.state.activeTab);
+      return <Form />;
     }
-  }
+    return <Form />;
+  };
 
   render() {
     return (
-      <Modal open={this.props.openEntry !== undefined} onClose={this.props.onClose}>
+      <Modal
+        open={this.props.openEntry !== undefined}
+        onClose={this.props.onClose}
+      >
         <Modal.Content>
           <Header>
             {this.get('bibKey')}
@@ -192,42 +229,41 @@ export default class Editor extends Component<EditorProps, EditorState> {
             onChange={this.handleFieldChange('entryType')}
           />
 
-          <Menu attached='top' tabular>
+          <Menu attached="top" tabular>
             <Menu.Item
-              name='Comments'
+              name="Comments"
               active={this.state.activeTab === 'Comments'}
               onClick={this.handleTabClick}
             />
             <Menu.Item
-              name='Required fields'
+              name="Required fields"
               active={this.state.activeTab === 'Required fields'}
               onClick={this.handleTabClick}
             />
             <Menu.Item
-              name='Optional fields'
+              name="Optional fields"
               active={this.state.activeTab === 'Optional fields'}
               onClick={this.handleTabClick}
             />
             <Menu.Item
-              name='Links'
+              name="Links"
               active={this.state.activeTab === 'Links'}
               onClick={this.handleTabClick}
             />
             <Menu.Item
-              name='BibTeX'
+              name="BibTeX"
               active={this.state.activeTab === 'BibTeX'}
               onClick={this.handleTabClick}
             />
           </Menu>
-          <Segment attached='bottom' style={{ minHeight: '45vh' }}>
+          <Segment attached="bottom" style={{ minHeight: '45vh' }}>
             {this.renderActiveTab()}
           </Segment>
-
         </Modal.Content>
         <Modal.Actions>
           <Button onClick={this.props.onClose}>Done (Esc)</Button>
         </Modal.Actions>
       </Modal>
-    )
+    );
   }
 }

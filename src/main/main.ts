@@ -15,9 +15,9 @@ import path from 'path';
 import { app, dialog, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import Store from "electron-store";
 
 const store = new Store();
 
@@ -37,16 +37,10 @@ let mainWindow: BrowserWindow | null = null;
  */
 function readFile(path: string) {
   return new Promise((resolve, reject) => {
-    fs.readFile(
-      path,
-      'utf-8',
-      (error, data) => {
-        if (error)
-          reject(error)
-        else
-          resolve({ path, data: data.toString() })
-      }
-    );
+    fs.readFile(path, 'utf-8', (error, data) => {
+      if (error) reject(error);
+      else resolve({ path, data: data.toString() });
+    });
   });
 }
 
@@ -56,30 +50,33 @@ function readFile(path: string) {
  */
 ipcMain.handle('open-file', async (_, options) => {
   return new Promise((resolve, reject) => {
-    dialog.showOpenDialog(options).then(result => {
-      if (result.canceled) {
-        resolve({}) // an empty result indicates a cancellation
-      } else {
-        resolve(readFile(result.filePaths[0])) // return a Promise
-      }
-    }).catch(reject)
-  })
+    dialog
+      .showOpenDialog(options)
+      .then((result) => {
+        if (result.canceled) {
+          resolve({}); // an empty result indicates a cancellation
+        } else {
+          resolve(readFile(result.filePaths[0])); // return a Promise
+        }
+      })
+      .catch(reject);
+  });
 });
 
 ipcMain.handle('read-file', async (_, path) => {
-  return readFile(path) // like ipcMain.handle('open-file', ...) but with a known path
+  return readFile(path); // like ipcMain.handle('open-file', ...) but with a known path
 });
 
 /*
  * IPC for the Electron Store
  */
-ipcMain.on("electron-store-get", async (event, val) => {
+ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = store.get(val);
 });
-ipcMain.on("electron-store-set", async (_, key, val) => {
+ipcMain.on('electron-store-set', async (_, key, val) => {
   store.set(key, val);
 });
-ipcMain.on("electron-store-delete", async (_, key) => {
+ipcMain.on('electron-store-delete', async (_, key) => {
   store.delete(key);
 });
 

@@ -2,7 +2,6 @@ const { contextBridge, ipcRenderer, shell } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-
     /*
      * The IPC example from the electron-react-boilerplate. See src/renderer/index.ejs
      * for how this example is called and track the effects in the main console and in
@@ -43,9 +42,10 @@ contextBridge.exposeInMainWorld('electron', {
       const validChannels = ['open-file', 'read-file'];
       if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, ...args);
-      } else {
-        return new Promise((resolve, reject) => reject("invalid channel " + channel))
       }
+      return new Promise((resolve, reject) =>
+        reject(`invalid channel ${channel}`)
+      );
     },
   },
 
@@ -54,13 +54,13 @@ contextBridge.exposeInMainWorld('electron', {
    */
   store: {
     get(property) {
-      return ipcRenderer.sendSync("electron-store-get", property);
+      return ipcRenderer.sendSync('electron-store-get', property);
     },
     set(property, val) {
-      ipcRenderer.send("electron-store-set", property, val);
+      ipcRenderer.send('electron-store-set', property, val);
     },
     delete(property) {
-      ipcRenderer.send("electron-store-delete", property);
+      ipcRenderer.send('electron-store-delete', property);
     },
     // TODO: other methods like has(), reset(), etc.
   },
@@ -72,7 +72,6 @@ contextBridge.exposeInMainWorld('electron', {
    * in src/main/main.ts.
    */
   openExternal(url) {
-    return shell.openExternal(url) // return a Promise<void>
+    return shell.openExternal(url); // return a Promise<void>
   },
-
 });

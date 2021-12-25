@@ -7,6 +7,6 @@ export default class EmptyView extends Component {
       <Container className="empty-view">
         Press "ctrl + o" to open a file
       </Container>
-    )
+    );
   }
 }
