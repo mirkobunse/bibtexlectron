@@ -98,13 +98,15 @@ export default class TableView extends Component<
       const entry = _.find(this.props.entries, (entry: Entry) => {
         return entry.bibKey === bibKey;
       });
-      if (event.target.localName === 'i') {
-        // file icon clicked
-        this.props.onLinkClicked(entry);
-      } else {
-        // something else in the row has been clicked
-        this.props.onEntryClicked(entry);
-        this.setState({ selectedKey: bibKey });
+      if (entry !== undefined) {
+        if (event.target.localName === 'i') {
+          // file icon clicked
+          this.props.onLinkClicked(entry);
+        } else {
+          // something else in the row has been clicked
+          this.props.onEntryClicked(entry);
+          this.setState({ selectedKey: bibKey });
+        }
       }
     };
   };
