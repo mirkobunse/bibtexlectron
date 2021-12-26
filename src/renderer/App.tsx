@@ -96,21 +96,23 @@ class AppComponent extends Component<AppProps, AppState> {
 
   // open the last file on startup
   componentDidMount = () => {
-    const path = window.electron.store.get('path');
-    if (path) {
-      // open the default file on startup
-      window.electron.ipcRenderer
-        .invoke('read-file', path)
-        .then((result) => {
-          if (result.data) {
-            this.setState({
-              // set the state according to the file contents
-              path: result.path,
-              entries: parseBibtex(result.data),
-            });
-          }
-        })
-        .catch(console.log);
+    if (window.electron) {
+      const path = window.electron.store.get('path');
+      if (path) {
+        // open the default file on startup
+        window.electron.ipcRenderer
+          .invoke('read-file', path)
+          .then((result) => {
+            if (result.data) {
+              this.setState({
+                // set the state according to the file contents
+                path: result.path,
+                entries: parseBibtex(result.data),
+              });
+            }
+          })
+          .catch(console.log);
+      }
     }
   };
 
